@@ -2,24 +2,25 @@
    "Tudo num app só": a janela inteira do LUUZI para explorar.
    Todas as seções, balões (apps, mouses, telas, botões, ações),
    skins e ajustes. Cada seção guarda ajustes por app.
-   EDITE AQUI — tipos de uso e apps de exemplo (fictícios): USES
+   EDITE AQUI — tipos de uso e apps sugeridos: USES
+   [nome em português, nome em inglês, arquivo do ícone em apps/]
    ============================================================ */
 (function(){
 const root = $("#appx"); if(!root) return;
 
 /* ---------- dados ---------- */
 const USES = [
-  { id:"design", n:"Design|Design", apps:[["Vetora","Vetora","V","#FF8A00"],["Pixelo","Pixelo","Px","#2F7BFF"],["Quadro","Frame","Q","#A259FF"],["Paleta","Palette","Pa","#FF4F8B"],["Tipografia","Typeface","T","#1FB57A"]] },
-  { id:"video", n:"Edição de vídeo|Video editing", apps:[["Corte","Cut","C","#6C4BFF"],["Timeline Pro","Timeline Pro","Tl","#E8562A"],["Cena 3D","Scene 3D","3D","#16A1C9"],["Som Lab","Sound Lab","S","#2EAA5C"],["Cor Studio","Color Studio","Co","#D63F7C"]] },
-  { id:"prod", n:"Produtividade|Productivity", apps:[["Planilhas","Sheets","Pl","#1E9E5A"],["Documentos","Docs","D","#2D6BF0"],["Apresenta","Present","Ap","#F08A24"],["Agenda","Calendar","Ag","#E5484D"],["Correio","Mail","@","#3A8DFF"]] },
-  { id:"code", n:"Programação|Coding", apps:[["CodeNinho","CodeNest","{}","#2F80ED"],["Terminal X","Terminal X",">_","#3F404C"],["Banco Studio","DB Studio","DB","#8E5CF7"],["Ramos","Branches","R","#F05133"],["API Lab","API Lab","AP","#14A38B"]] },
-  { id:"daily", n:"Dia a dia|Everyday", apps:[["Navegador","Browser","N","#2F7BFF"],["Mensagens","Messages","M","#29C46A"],["Música","Music","♪","#FF3B5C"],["Fotos","Photos","F","#F5A524"],["Vídeos","Videos","▶","#E5484D"]] },
+  { id:"design", n:"Design|Design", apps:[["Figma","Figma","figma"],["Adobe Photoshop","Adobe Photoshop","photoshop"],["Adobe Illustrator","Adobe Illustrator","illustrator"],["Freeform","Freeform","freeform"],["Catálogo de Fontes","Font Book","fontbook"]] },
+  { id:"video", n:"Edição de vídeo|Video editing", apps:[["Adobe Premiere Pro","Adobe Premiere Pro","premiere"],["OBS","OBS","obs"],["QuickTime Player","QuickTime Player","quicktime"],["IINA","IINA","iina"],["Fotos","Photos","photos"]] },
+  { id:"music", n:"Música e áudio|Music and audio", apps:[["FL Studio","FL Studio","flstudio"],["Serato DJ Pro","Serato DJ Pro","serato"],["iZotope RX","iZotope RX","rx"],["Melodyne","Melodyne","melodyne"],["Spotify","Spotify","spotify"]] },
+  { id:"prod", n:"Produtividade|Productivity", apps:[["Google Planilhas","Google Sheets","sheets"],["Google Docs","Google Docs","docs"],["Google Apresentações","Google Slides","slides"],["Notas","Notes","notes"],["Calendário","Calendar","calendar"],["Mail","Mail","mail"]] },
+  { id:"daily", n:"Dia a dia|Everyday", apps:[["Safari","Safari","safari"],["Arc","Arc","arc"],["WhatsApp","WhatsApp","whatsapp"],["Mensagens","Messages","messages"],["Música","Music","music"],["Mapas","Maps","maps"]] },
 ];
-const APP = {}; USES.forEach(u => u.apps.forEach(([pt,en,ini,c]) => APP[pt] = { pt, en, ini, c, use:u.id }));
+const APP = {}; USES.forEach(u => u.apps.forEach(([pt,en,file]) => APP[file] = { pt, en, file, use:u.id }));
 const appName = id => id==="global" ? "Global" : L([APP[id].pt, APP[id].en]);
 const appIcon = (id, s=18) => id==="global"
   ? `<span class="ax-ai g" style="--s:${s}px">${I.globe}</span>`
-  : `<span class="ax-ai" style="--s:${s}px;--c:${APP[id].c}">${APP[id].ini}</span>`;
+  : `<img class="ax-ai img" style="--s:${s}px" src="apps/${APP[id].file}.png" width="${s}" height="${s}" alt="" loading="lazy" decoding="async">`;
 
 const MICE = [["all","Todos os mouses|All mice"],["mx","MX Master 3S|MX Master 3S"],["g203","G203 LIGHTSYNC|G203 LIGHTSYNC"],["magic","Magic Mouse|Magic Mouse"]];
 const SCRS = [["all","Todas as telas|All displays"],["mb","Tela do MacBook|MacBook display"],["ext","Monitor 27″|27″ monitor"]];
@@ -181,7 +182,7 @@ const SCREEN = {
       ${modeCard("auto")}
       ${card("Ícone na tela|Icon on screen", `<div class="ax-icons">${["Clássico|Classic","Vertical|Vertical","Ponto|Dot","Anel|Ring","Ocultar|Hide"].map((n,i)=>`<button type="button" class="ax-preset${i===ic?" on":""}" data-set="icon" data-v="${i}">${i<4?anchorIcon(i):'<svg viewBox="-20 -20 40 40"><circle r="13" fill="none" stroke="currentColor" stroke-dasharray="3 3"/><path d="M-6 6 6-6" stroke="var(--accent)" stroke-width="2.5"/></svg>'}<b>${L(n)}</b></button>`).join("")}</div>`, "", `<span class="ax-note">${L("aparece onde você clicou|appears where you clicked")}</span>`)}
     </div><div>${card("Teste|Test", `<p class="ax-note">${L(act?"Segure o clique aqui dentro e afaste o mouse: a página rola sozinha. Solte para parar.|Hold the click in here and move away: the page scrolls by itself. Release to stop.":"Clique aqui dentro e afaste o mouse. Clique de novo para parar.|Click in here and move away. Click again to stop.")}</p>
-      <div class="ax-test" data-test="auto"><div class="ax-lines">${lines(120)}</div><span class="ax-anchor"></span></div>`, "ax-sticky")}</div></div>`;
+      <div class="ax-autobox"><div class="ax-test" data-test="auto"><div class="ax-lines">${lines(120)}</div></div><span class="ax-anchor"></span></div>`, "ax-sticky")}</div></div>`;
   },
   skins(){
     const k = val("skins","skin");
@@ -267,7 +268,7 @@ function drawBalloon(){
   let h = "";
   if(b.kind==="apps"){
     const list = b.ignore ? [] : st.apps[s];
-    const sug = st.use ? USES.find(u=>u.id===st.use).apps.map(a=>a[0]) : USES.map(u=>u.apps[0][0]);
+    const sug = st.use ? USES.find(u=>u.id===st.use).apps.map(a=>a[2]) : USES.map(u=>u.apps[0][2]);
     const others = Object.keys(APP).filter(a=>!sug.includes(a));
     const taken = id => list.some(a=>a.id===id);
     h = `<div class="ax-bh"><h4>${L(b.ignore?"Ignorar um app|Ignore an app":"Aplicativos|Applications")}</h4>${b.ignore?"":`<button type="button" class="ax-plus${st.adding?" x":""}" data-act="adding">${st.adding?I.x:I.plus}</button>`}</div>`;
@@ -390,7 +391,10 @@ function afterRender(){
   const kind = t.dataset.test;
   if(kind==="scroll"){
     let target = 0, y = 0;
-    t.onwheel = e => { if(!on){ return; } e.preventDefault();
+    t.onwheel = e => { if(!on){ return; }
+      const max = t.scrollHeight - t.clientHeight, up = (val("rolagem","invV") ? -e.deltaY : e.deltaY) < 0;
+      if((up && target <= 0) || (!up && target >= max-1)) return;          // chegou no fim: a página continua rolando
+      e.preventDefault();
       const pr = PRESETS[val("rolagem","preset")], sp = val("rolagem","speed"), ac = val("rolagem","accel");
       let dy = e.deltaMode===1 ? e.deltaY*16 : e.deltaY; if(val("rolagem","invV")) dy = -dy;
       dy *= (Math.abs(dy) > 40 ? 1 + ac*.6 : 1) * sp * .55;
@@ -408,18 +412,17 @@ function afterRender(){
       const glide = () => { v *= .9 + m*.08; t.scrollTop -= v; if(Math.abs(v) > .3) anim = requestAnimationFrame(glide); }; if(m > .02) glide(); };
   }
   if(kind==="auto"){
-    const a = $(".ax-anchor", t); let active = false, ax = 0, ayy = 0, my = 0, mx = 0, frac = 0;
+    const a = $(".ax-anchor", t.parentElement); let active = false, ax = 0, ayy = 0, my = 0, mx = 0, frac = 0;
     const icon = val("auto","icon"); a.innerHTML = icon<4 ? anchorIcon(icon) : "";
     const stop = () => { active = false; a.classList.remove("show"); cancelAnimationFrame(anim); };
     const run = () => { const dy = my-ayy, dead = 12, m = Math.max(0, Math.abs(dy)-dead), sp = Math.sign(dy) * Math.pow(m, 1.35) * .06 * (val("auto","invV")?-1:1);
       frac += sp; const whole = Math.trunc(frac); frac -= whole; t.scrollTop += whole; anim = requestAnimationFrame(run); };
     t.onpointerdown = e => { if(!on) return; const r = t.getBoundingClientRect();
       if(active && !val("auto","act")) return stop();
-      active = true; ax = e.clientX-r.left; ayy = my = e.clientY-r.top; a.style.left = ax+"px"; a.style.top = (ayy + t.scrollTop)+"px"; a.classList.add("show");
+      active = true; ax = e.clientX-r.left; ayy = my = e.clientY-r.top; a.style.left = ax+"px"; a.style.top = ayy+"px"; a.classList.add("show");
       t.setPointerCapture(e.pointerId); cancelAnimationFrame(anim); run(); };
-    t.onpointermove = e => { const r = t.getBoundingClientRect(); my = e.clientY-r.top; mx = e.clientX-r.left; if(active) a.style.top = (ayy + t.scrollTop)+"px"; };
+    t.onpointermove = e => { const r = t.getBoundingClientRect(); my = e.clientY-r.top; mx = e.clientX-r.left; };
     t.onpointerup = () => { if(val("auto","act")) stop(); };
-    t.onscroll = () => { if(active) a.style.top = (ayy + t.scrollTop)+"px"; };
   }
   if(kind==="cursor"){
     const f = $(".ax-fp", t); let x = 60, y = 60, inside = false;

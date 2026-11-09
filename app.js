@@ -81,17 +81,17 @@ const BUTTONS = [ // botão do mouse → ação, por app
 ];
 /* Seção "Cada app, cada mouse, cada tela": o que muda em cada combinação */
 const CTX_APPS = [
-  { n:"Safari",   scroll:"Suave|Smooth",    b4:"Voltar ⌘[|Back ⌘[" },
-  { n:"Figma",    scroll:"Preciso|Precise", b4:"Desfazer ⌘Z|Undo ⌘Z" },
-  { n:"Premiere", scroll:"Linhas|Lines",    b4:"Marcador M|Marker M" },
+  { n:"Safari", ic:"safari", scroll:"Suave|Smooth",    b4:"Voltar ⌘[|Back ⌘[" },
+  { n:"Figma", ic:"figma", scroll:"Preciso|Precise", b4:"Desfazer ⌘Z|Undo ⌘Z" },
+  { n:"Adobe Premiere Pro", ic:"premiere", scroll:"Linhas|Lines",    b4:"Marcador M|Marker M" },
 ];
 const CTX_MICE = [
-  { n:"MX Master",   v:1.4, a:true  },
+  { n:"MX Master 3S", v:1.4, a:true  },
   { n:"Magic Mouse", v:1.0, a:false },
-  { n:"G203",        v:2.1, a:false },
+  { n:"G203 LIGHTSYNC", v:2.1, a:false },
 ];
 const CTX_SCREENS = [
-  { n:"MacBook",                   k:1   },
+  { n:"Tela do MacBook|MacBook display", k:1 },
   { n:"Monitor 4K|4K monitor",     k:1.5 },
 ];
 /* Estrelas da constelação: cada uma é um ajuste do LUUZI ("pt|en", x, y de 0 a 1) */
@@ -475,15 +475,18 @@ const GESTURES = {
   const bar=$("#ctxbar"), res=$("#res");
   const IC = {
     app:'<svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1.3"/><rect x="9" y="2" width="5" height="5" rx="1.3"/><rect x="2" y="9" width="5" height="5" rx="1.3"/><rect x="9" y="9" width="5" height="5" rx="1.3"/></svg>',
-    mouse:ICONS.rolagem,
-    screen:'<svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="8.5" rx="1.5"/><path d="M6 14h4M8 11v3"/></svg>',
+    mouse:'<svg viewBox="0 0 16 16"><rect x="4" y="1.5" width="8" height="13" rx="4"/><path d="M8 4v2.5"/></svg>',
+    screen:'<svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="9" rx="1.5"/><path d="M6 14h4M8 11.5V14"/></svg>',
   };
   const KINDS = [["app",CTX_APPS],["mouse",CTX_MICE],["screen",CTX_SCREENS]];
   const sel = { app:0, mouse:0, screen:0 };
   let last={}, userAt=0, turn=0;
   function render(changed){
-    bar.innerHTML = KINDS.map(([k,list])=>`<button class="ctxp${k===changed?" hl":""}" data-kind="${k}">${IC[k]}${L(list[sel[k]].n)}<i>▼</i></button>`).join("");
     const a=CTX_APPS[sel.app], m=CTX_MICE[sel.mouse], sc=CTX_SCREENS[sel.screen];
+    const chev='<svg class="cv" viewBox="0 0 16 16"><path d="M4.5 6.5 8 10l3.5-3.5"/></svg>';
+    const icon=k=>k==="app"?`<img src="apps/${a.ic}.png" width="18" height="18" alt="">`:IC[k];
+    bar.innerHTML = KINDS.map(([k,list])=>`<button class="ctxp${k===changed?" hl":""}" data-kind="${k}">${icon(k)}<b>${L(list[sel[k]].n)}</b>${chev}</button>`).join("")
+      + `<p class="ctxe"><img src="apps/${a.ic}.png" width="14" height="14" alt=""> ${L(`Editando o ajuste do ${a.n}: só vale nele.|Editing ${a.n}'s settings: they apply only there.`)}</p>`;
     const rows = [
       ["rolagem", L("Rolagem suave|Smooth Scrolling"), L("por app|per app"), L(a.scroll)],
       ["botoes",  L("Botão 4|Button 4"),               L("por app|per app"), L(a.b4)],

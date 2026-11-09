@@ -20,7 +20,7 @@ Página única de apresentação do LUUZI (app de mouse para Mac). Publicada pel
 - **Cadastro antes do download**: `BREVO_FORM_URL` (formulário "LUUZI Alpha - download" no Brevo, lista "LUUZI Alpha").
 - **Janela do LUUZI desenhada** (animações "Configure no LUUZI"): `SCREENS`, `CFG`, `lzBody()` no `app.js`.
 - **Seção "Tudo num app só"** (o app inteiro para explorar, com balões, skins, ajustes e testes que funcionam): `explorar.js`.
-  Tipos de uso e apps de exemplo (fictícios) ficam em `USES`. Classes CSS começam com `ax-` (evite nomes genéricos: o site já usa `.acc`, `.dots`, `.pad`, `.wrap`).
+  Tipos de uso e apps sugeridos ficam em `USES`; os ícones reais (96 px) ficam em `apps/`. Classes CSS começam com `ax-` (evite nomes genéricos: o site já usa `.acc`, `.dots`, `.pad`, `.wrap`).
   Ao mudar o `explorar.js`, aumente o `?v=` dele no fim do `index.html`.
 - **Seção "Cada app, cada mouse, cada tela"**: `CTX_APPS`, `CTX_MICE`, `CTX_SCREENS`.
 - **Constelação**: `STARS` e `LINKS`. **Botões por app**: `BUTTONS`.
