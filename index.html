@@ -52,7 +52,7 @@
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:var(--bg)}
+html{scroll-behavior:smooth;background:var(--bg)}
 body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -68,6 +68,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- topo e navegação ---------- */
 .top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:22px clamp(16px,4vw,48px)}
 .top .mark{height:22px;width:auto}
+.top .right{display:flex;align-items:center;gap:10px}
+.lang{display:flex;padding:3px;border-radius:999px;background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(12px)}
+.lang button{font:600 11px var(--mono);padding:6px 9px;border-radius:999px;color:var(--dim);transition:all .4s var(--ease)}
+.lang button.on{background:var(--text);color:var(--bg)}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;font-weight:600;font-size:15px;
   background:var(--accent);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 10px 40px -8px color-mix(in srgb,var(--accent) 80%,transparent);
   transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
@@ -81,7 +85,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dots a:hover span{opacity:1;transform:translateY(-50%)}
 
 /* ---------- seções ---------- */
-section{position:relative;z-index:1;min-height:100vh;min-height:100svh;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;padding:100px clamp(16px,6vw,80px) 70px}
+section{position:relative;z-index:1;min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:100px clamp(16px,6vw,80px) 70px}
 .wrap{width:100%;max-width:1160px;display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(32px,6vw,90px);align-items:center}
 .wrap.flip{grid-template-columns:1.15fr 1fr}
 .wrap.flip .copy{order:2}
@@ -106,6 +110,24 @@ section.in .r{opacity:1;transform:none;filter:none}
 .win-bar i:nth-child(1){background:#ff5f57}.win-bar i:nth-child(2){background:#febc2e}.win-bar i:nth-child(3){background:#28c840}
 .win-bar em{margin-left:auto;font:500 11px var(--mono);color:var(--dim);font-style:normal}
 .cursor{position:absolute;width:22px;height:22px;left:0;top:0;z-index:7;pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45))}
+
+/* camada "configure no LUUZI": o print do app, ampliado, com um cursor que configura */
+.cfg{position:absolute;inset:0;z-index:20;background:#F6F4F1;opacity:0;pointer-events:none;transition:opacity .8s var(--ease);overflow:hidden}
+.stage.cfg-on .cfg{opacity:1}
+.cfg .shot{position:absolute;left:0;top:0;transform-origin:0 0;transition:transform 1.4s var(--ease)}
+.cfg .shot img{display:block;width:100%;height:auto}
+.cfg .ring{position:absolute;border-radius:12px;border:2.5px solid var(--accent);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 18%,transparent),0 0 30px var(--accent);opacity:0;transform:scale(1.08);transition:all .5s var(--ease)}
+.cfg .ring.show{opacity:1;transform:none}
+.cfg .knob{position:absolute;width:2.3%;aspect-ratio:1;margin:-1.15% 0 0 -1.15%;border-radius:50%;background:#fff;border:2px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.25);display:none}
+.cfg .bar{position:absolute;height:.55%;margin-top:-.27%;border-radius:4px;background:var(--accent);display:none}
+.cfg .patch{position:absolute;width:3.4%;aspect-ratio:1;margin:-1.7% 0 0 -1.7%;border-radius:50%;background:#fff;display:none}
+.cfg .ccur{position:absolute;width:26px;height:26px;left:0;top:0;z-index:3;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45));transition:transform 1.1s var(--ease)}
+.cfg .ripple{position:absolute;width:44px;height:44px;margin:-22px;border-radius:50%;border:2px solid var(--accent);opacity:0;z-index:2}
+.cfg .ripple.go{animation:ripple .6s var(--ease)}
+@keyframes ripple{from{opacity:1;transform:scale(.3)}to{opacity:0;transform:scale(1.4)}}
+.step{position:absolute;left:50%;bottom:16px;z-index:25;transform:translateX(-50%);display:flex;gap:6px;padding:4px;border-radius:999px;background:color-mix(in srgb,var(--surface-2) 85%,transparent);border:1px solid var(--line);backdrop-filter:blur(12px);box-shadow:0 8px 24px -10px rgba(0,0,0,.35)}
+.step span{font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px;color:var(--dim);white-space:nowrap;transition:all .5s var(--ease)}
+.step span.on{background:var(--accent);color:#fff}
 
 /* ---------- 1. início ---------- */
 #inicio .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
@@ -198,8 +220,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 /* ---------- 8. o app ---------- */
 #app .wrap{grid-template-columns:1fr;justify-items:center;text-align:center}
 #app .lead{margin:0 auto}
-.mac{width:100%;max-width:1000px;margin-top:34px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface-2);box-shadow:var(--shadow),0 0 100px -40px var(--accent)}
-.mac img{display:block;width:100%;height:auto;transition:opacity .25s}
+.mac{width:100%;max-width:1000px;margin-top:30px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#F6F4F1;box-shadow:var(--shadow),0 0 100px -40px var(--accent)}
+.mac img{display:block;width:100%;height:auto;transition:opacity .3s var(--ease)}
 .shots{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
 .shots button{font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--dim);background:var(--surface);transition:all .4s var(--ease)}
 .shots button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
@@ -246,7 +268,6 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 
 /* ---------- celular ---------- */
 @media (max-width:860px){
-  html{scroll-snap-type:y proximity}
   .wrap,.wrap.flip{grid-template-columns:1fr;gap:34px}
   .wrap.flip .copy{order:0}
   .dots{display:none}
@@ -256,6 +277,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   .map .n{width:56px}
   .gesture-map{max-width:none}
   .constellation{aspect-ratio:1.1/1}
+  .top .btn.sm{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -280,7 +302,10 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <a href="#inicio" aria-label="LUUZI">
     <svg class="mark" viewBox="0 0 426 108"><use href="#letters" fill="var(--text)"/><use href="#star" fill="var(--accent)" transform="translate(314.336 0) scale(.4613 .4613)"/></svg>
   </a>
-  <a class="btn sm" href="#baixar">Baixar grátis</a>
+  <div class="right">
+    <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="pt">PT</button><button data-lang="en">EN</button></div>
+    <a class="btn sm" href="#baixar" data-t="top.cta">Baixar grátis</a>
+  </div>
 </header>
 
 <nav class="dots" aria-label="Seções"></nav>
@@ -288,49 +313,49 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 <main>
 
 <!-- 1 · INÍCIO -->
-<section id="inicio" data-title="Início">
+<section id="inicio" data-title="Início" data-title-en="Home">
   <div class="wrap">
     <div class="star-hero r" style="--i:0"><div class="halo"></div>
       <svg viewBox="0 0 241 234"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a5c"/><stop offset=".55" stop-color="#E8562A"/><stop offset="1" stop-color="#c63f17"/></linearGradient></defs><use href="#star" fill="url(#sg)"/></svg>
     </div>
-    <h1 class="r" style="--i:1">Seu mouse,<br><span class="grad">fluido como o Mac.</span></h1>
-    <p class="lead r" style="--i:2">Qualquer mouse, com a fluidez e os atalhos de um trackpad. Do seu jeito.</p>
+    <h1 class="r" style="--i:1" data-t="hero.h">Seu mouse,<br><span class="grad">fluido como o Mac.</span></h1>
+    <p class="lead r" style="--i:2" data-t="hero.p">Qualquer mouse, com a fluidez e os atalhos de um trackpad. Do seu jeito.</p>
     <div class="cta-row r" style="--i:3">
-      <a class="btn" href="#baixar">Baixar alpha grátis</a>
-      <a class="btn ghost" href="#rolagem">Ver o que ele faz</a>
+      <a class="btn" href="#baixar" data-t="hero.cta">Baixar alpha grátis</a>
+      <a class="btn ghost" href="#rolagem" data-t="hero.see">Ver o que ele faz</a>
     </div>
   </div>
-  <div class="hint" aria-hidden="true"><i></i>role</div>
+  <div class="hint" aria-hidden="true"><i></i><span data-t="hero.scroll">role</span></div>
 </section>
 
 <!-- 2 · ROLAGEM SUAVE -->
-<section id="rolagem" data-title="Rolagem suave">
+<section id="rolagem" data-title="Rolagem suave" data-title-en="Smooth Scrolling">
   <div class="wrap">
     <div class="copy">
-      <h2 class="r" style="--i:0">Rolagem suave</h2>
-      <p class="lead r" style="--i:1">Cada giro da roda vira um deslize contínuo e macio, como no trackpad.</p>
-      <div class="chips r" style="--i:2"><span class="chip">Funciona em <b>todo app</b></span><span class="chip">Inércia de <b>trackpad</b></span><span class="chip">Velocidade <b>do seu jeito</b></span></div>
+      <h2 class="r" style="--i:0" data-t="rol.h">Rolagem suave</h2>
+      <p class="lead r" style="--i:1" data-t="rol.p">Cada giro da roda vira um deslize contínuo e macio, como no trackpad.</p>
+      <div class="chips r" style="--i:2" data-t="rol.chips"><span class="chip">Funciona em <b>todo app</b></span><span class="chip">Inércia de <b>trackpad</b></span><span class="chip">Velocidade <b>do seu jeito</b></span></div>
     </div>
-    <div class="stage r" style="--i:1">
-      <div class="win-bar"><i></i><i></i><i></i><em>roda do mouse ↓</em></div>
+    <div class="stage r" style="--i:1" data-cfg="rolagem">
+      <div class="win-bar"><i></i><i></i><i></i><em data-t="rol.bar">roda do mouse ↓</em></div>
       <div class="scroll-demo">
-        <div class="pane"><h4>Sem LUUZI</h4><div class="feed" id="feedA"></div></div>
-        <div class="pane on"><h4>Com LUUZI</h4><div class="feed" id="feedB"></div></div>
+        <div class="pane"><h4 data-t="rol.off">Sem LUUZI</h4><div class="feed" id="feedA"></div></div>
+        <div class="pane on"><h4 data-t="rol.on">Com LUUZI</h4><div class="feed" id="feedB"></div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- 3 · BOTÕES -->
-<section id="botoes" data-title="Botões">
+<section id="botoes" data-title="Botões" data-title-en="Buttons">
   <div class="wrap flip">
     <div class="copy">
-      <h2 class="r" style="--i:0">Botões</h2>
-      <p class="lead r" style="--i:1">Cada botão faz o que você quiser: voltar, fechar aba, abrir um app, um atalho. E muda sozinho conforme o app aberto.</p>
-      <div class="chips r" style="--i:2"><span class="chip"><b>Por app</b></span><span class="chip"><b>Por mouse</b></span><span class="chip"><b>Por tela</b></span></div>
+      <h2 class="r" style="--i:0" data-t="bot.h">Botões</h2>
+      <p class="lead r" style="--i:1" data-t="bot.p">Cada botão faz o que você quiser: voltar, fechar aba, abrir um app, um atalho. E muda sozinho conforme o app aberto.</p>
+      <div class="chips r" style="--i:2" data-t="bot.chips"><span class="chip"><b>Por app</b></span><span class="chip"><b>Por mouse</b></span><span class="chip"><b>Por tela</b></span></div>
     </div>
-    <div class="stage r" style="--i:1">
-      <div class="win-bar"><i></i><i></i><i></i><em>Botões</em></div>
+    <div class="stage r" style="--i:1" data-cfg="botoes">
+      <div class="win-bar"><i></i><i></i><i></i><em data-t="bot.h">Botões</em></div>
       <div class="apptabs" id="apptabs"><span class="on">Safari</span><span>Figma</span><span>Finder</span></div>
       <div class="mouse-wrap">
         <svg class="mouse" viewBox="0 0 120 190" aria-hidden="true">
@@ -348,44 +373,44 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 </section>
 
 <!-- 4 · GESTOS -->
-<section id="gestos" data-title="Gestos">
+<section id="gestos" data-title="Gestos" data-title-en="Gestures">
   <div class="wrap">
     <div class="copy">
-      <h2 class="r" style="--i:0">Gestos</h2>
-      <p class="lead r" style="--i:1">Segure um botão e desenhe com o mouse. Trocar de Space, abrir o Mission Control ou mostrar a mesa fica a um gesto.</p>
+      <h2 class="r" style="--i:0" data-t="ges.h">Gestos</h2>
+      <p class="lead r" style="--i:1" data-t="ges.p">Segure um botão e desenhe com o mouse. Trocar de Space, abrir o Mission Control ou mostrar a mesa fica a um gesto.</p>
       <div class="gesture-map r" style="--i:2" id="gmap">
-        <div data-g="left"><canvas data-dir="left" width="76" height="76"></canvas>Espaço à direita</div>
-        <div data-g="right"><canvas data-dir="right" width="76" height="76"></canvas>Espaço à esquerda</div>
-        <div data-g="up"><canvas data-dir="up" width="76" height="76"></canvas>Mission Control</div>
-        <div data-g="down"><canvas data-dir="down" width="76" height="76"></canvas>Mostrar mesa</div>
+        <div data-g="left"><canvas data-dir="left" width="76" height="76"></canvas><span data-t="ges.left">Espaço à direita</span></div>
+        <div data-g="right"><canvas data-dir="right" width="76" height="76"></canvas><span data-t="ges.right">Espaço à esquerda</span></div>
+        <div data-g="up"><canvas data-dir="up" width="76" height="76"></canvas><span data-t="ges.up">Mission Control</span></div>
+        <div data-g="down"><canvas data-dir="down" width="76" height="76"></canvas><span data-t="ges.down">Mostrar mesa</span></div>
       </div>
     </div>
-    <div class="stage r" style="--i:1" id="gStage">
+    <div class="stage r" style="--i:1" id="gStage" data-cfg="gestos">
       <div class="spaces" id="spaces">
-        <div class="space"><span class="label">Mesa 1</span>
+        <div class="space"><span class="label" data-t="ges.d1">Mesa 1</span>
           <div class="w" style="left:8%;top:24%;width:52%;height:52%"></div><div class="w" style="left:44%;top:40%;width:46%;height:46%"></div></div>
-        <div class="space"><span class="label">Mesa 2</span>
+        <div class="space"><span class="label" data-t="ges.d2">Mesa 2</span>
           <div class="w" style="left:12%;top:22%;width:76%;height:64%;background:linear-gradient(135deg,color-mix(in srgb,var(--blue) 22%,var(--surface-2)),var(--surface-2))"></div></div>
-        <div class="space"><span class="label">Mesa 3</span>
+        <div class="space"><span class="label" data-t="ges.d3">Mesa 3</span>
           <div class="w" style="left:10%;top:26%;width:38%;height:58%"></div><div class="w" style="left:52%;top:26%;width:38%;height:58%;background:linear-gradient(135deg,color-mix(in srgb,var(--pink) 20%,var(--surface-2)),var(--surface-2))"></div></div>
       </div>
       <canvas id="trail"></canvas>
-      <span class="pill" id="pill">Espaço à direita</span>
+      <span class="pill" id="pill"></span>
       <svg class="cursor" id="gCursor" viewBox="0 0 22 22"><use href="#pointer"/></svg>
     </div>
   </div>
 </section>
 
 <!-- 5 · AUTO SCROLL -->
-<section id="autoscroll" data-title="Auto Scroll">
+<section id="autoscroll" data-title="Auto Scroll" data-title-en="Autoscroll">
   <div class="wrap flip">
     <div class="copy">
-      <h2 class="r" style="--i:0">Auto Scroll</h2>
-      <p class="lead r" style="--i:1">Clique e afaste o mouse: a página corre sozinha, mais rápido quanto mais longe. O ícone estica junto, como um elástico.</p>
-      <div class="chips r" style="--i:2"><span class="chip"><b>Auto Scroll</b></span><span class="chip"><b>Arrastar</b> o conteúdo</span></div>
+      <h2 class="r" style="--i:0" data-t="auto.h">Auto Scroll</h2>
+      <p class="lead r" style="--i:1" data-t="auto.p">Clique e afaste o mouse: a página corre sozinha, mais rápido quanto mais longe. O ícone estica junto, como um elástico.</p>
+      <div class="chips r" style="--i:2" data-t="auto.chips"><span class="chip"><b>Auto Scroll</b></span><span class="chip"><b>Arrastar</b> o conteúdo</span></div>
     </div>
-    <div class="stage r" style="--i:1" id="aStage">
-      <div class="win-bar"><i></i><i></i><i></i><em>artigo.html</em></div>
+    <div class="stage r" style="--i:1" id="aStage" data-cfg="autoscroll">
+      <div class="win-bar"><i></i><i></i><i></i><em data-t="auto.bar">artigo.html</em></div>
       <div class="doc"><div class="page" id="page"></div></div>
       <svg id="anchor" viewBox="-32 -32 64 64" aria-hidden="true">
         <g id="aDisc"><circle r="26" fill="#3F404C" fill-opacity=".55"/><circle r="25.5" fill="none" stroke="#fff" stroke-opacity=".35"/></g>
@@ -398,18 +423,18 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 </section>
 
 <!-- 6 · CURSOR -->
-<section id="cursor" data-title="Cursor">
+<section id="cursor" data-title="Cursor" data-title-en="Pointer">
   <div class="wrap">
     <div class="copy">
-      <h2 class="r" style="--i:0">Cursor</h2>
-      <p class="lead r" style="--i:1">Mais rápido no monitor grande, preciso no Figma. Cada mouse na velocidade certa. Teste ao lado.</p>
+      <h2 class="r" style="--i:0" data-t="cur.h">Cursor</h2>
+      <p class="lead r" style="--i:1" data-t="cur.p">Mais rápido no monitor grande, preciso no Figma. Cada mouse na velocidade certa. Teste ao lado.</p>
       <div class="slider r" style="--i:2">
-        <label for="spd">Velocidade <b id="spdOut">1.6×</b></label>
+        <label for="spd"><span data-t="cur.speed">Velocidade</span> <b id="spdOut">1.6×</b></label>
         <input id="spd" type="range" min="0.5" max="3" step="0.1" value="1.6">
       </div>
     </div>
-    <div class="stage r" style="--i:1">
-      <div class="win-bar"><i></i><i></i><i></i><em>passe o mouse aqui</em></div>
+    <div class="stage r" style="--i:1" data-cfg="cursor">
+      <div class="win-bar"><i></i><i></i><i></i><em data-t="cur.bar">passe o mouse aqui</em></div>
       <div class="pad" id="pad">
         <div class="gridbg"></div>
         <div class="glow" id="pGlow"></div>
@@ -422,32 +447,32 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 </section>
 
 <!-- 7 · INFINITAS POSSIBILIDADES -->
-<section id="infinito" data-title="Possibilidades">
+<section id="infinito" data-title="Possibilidades" data-title-en="Possibilities">
   <div class="wrap">
-    <h2 class="r" style="--i:0">Uma estrela.<br><span class="grad">Infinitas possibilidades.</span></h2>
-    <p class="lead r" style="--i:1">As estrelas formam constelações sem fim. No LUUZI, cada ajuste é uma estrela: combine botões, gestos e velocidades por app, por mouse e por tela, e desenhe o mouse do seu jeito.</p>
+    <h2 class="r" style="--i:0" data-t="inf.h">Uma estrela.<br><span class="grad">Infinitas possibilidades.</span></h2>
+    <p class="lead r" style="--i:1" data-t="inf.p">As estrelas formam constelações sem fim. No LUUZI, cada ajuste é uma estrela: combine botões, gestos e velocidades por app, por mouse e por tela, e desenhe o mouse do seu jeito.</p>
     <div class="constellation r" style="--i:2"><canvas id="const"></canvas></div>
   </div>
 </section>
 
 <!-- 8 · O APP -->
-<section id="app" data-title="O app">
+<section id="app" data-title="O app" data-title-en="The app">
   <div class="wrap">
-    <h2 class="r" style="--i:0">Tudo num app só.</h2>
-    <p class="lead r" style="--i:1">Simples de ajustar, com teste na hora.</p>
-    <div class="mac r" style="--i:2"><img id="shot" src="prints/rolagem-suave.png" alt="Tela Rolagem suave do LUUZI" loading="lazy"></div>
+    <h2 class="r" style="--i:0" data-t="app.h">Tudo num app só.</h2>
+    <p class="lead r" style="--i:1" data-t="app.p">Simples de ajustar, com teste na hora.</p>
+    <div class="mac r" style="--i:2"><img id="shot" alt="" loading="lazy"></div>
     <div class="shots r" style="--i:3" id="shots"></div>
   </div>
 </section>
 
 <!-- 9 · BAIXAR -->
-<section id="baixar" data-title="Baixar">
+<section id="baixar" data-title="Baixar" data-title-en="Download">
   <div class="wrap">
-    <h2 class="r" style="--i:0">Use antes de todo mundo.<br><span class="grad">De graça.</span></h2>
-    <p class="lead r" style="--i:1">O alpha é gratuito para quem experimentar antes do lançamento oficial. E quem ajudar a construir o LUUZI agora terá uma <b style="color:var(--text)">condição especial no lançamento</b>.</p>
-    <div class="perks r" style="--i:2"><span><b>Grátis</b>no alpha</span><span><b>Automáticas</b>as atualizações</span></div>
-    <div class="cta-row r" style="--i:3"><a class="btn big" data-signup href="#baixar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>Baixar LUUZI alpha</a></div>
-    <p class="req r" style="--i:4" id="req">Grátis · macOS 14 ou mais novo · Apple Silicon e Intel</p>
+    <h2 class="r" style="--i:0" data-t="dl.h">Use antes de todo mundo.<br><span class="grad">De graça.</span></h2>
+    <p class="lead r" style="--i:1" data-t="dl.p">O alpha é gratuito para quem experimentar antes do lançamento oficial. E quem ajudar a construir o LUUZI agora terá uma <b style="color:var(--text)">condição especial no lançamento</b>.</p>
+    <div class="perks r" style="--i:2" data-t="dl.perks"><span><b>Grátis</b>no alpha</span><span><b>Automáticas</b>as atualizações</span></div>
+    <div class="cta-row r" style="--i:3"><a class="btn big" data-signup href="#baixar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg><span data-t="dl.btn">Baixar LUUZI alpha</span></a></div>
+    <p class="req r" style="--i:4" id="req"></p>
   </div>
   <footer>© <span id="yr"></span> LUUZI</footer>
 </section>
@@ -460,26 +485,26 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
     <button class="x" data-close aria-label="Fechar">×</button>
     <form id="signup" novalidate>
       <svg class="st" viewBox="0 0 241 234"><use href="#star"/></svg>
-      <h3 id="mTitle">Baixe o LUUZI alpha</h3>
-      <p>Grátis. Deixe seu nome e e-mail para garantir a condição especial no lançamento.</p>
-      <label class="field"><span>Nome</span><input name="NOME" autocomplete="given-name" required></label>
-      <label class="field"><span>E-mail</span><input name="EMAIL" type="email" autocomplete="email" required></label>
+      <h3 id="mTitle" data-t="m.h">Baixe o LUUZI alpha</h3>
+      <p data-t="m.p">Grátis. Deixe seu nome e e-mail para garantir a condição especial no lançamento.</p>
+      <label class="field"><span data-t="m.name">Nome</span><input name="NOME" autocomplete="given-name" required></label>
+      <label class="field"><span data-t="m.email">E-mail</span><input name="EMAIL" type="email" autocomplete="email" required></label>
       <input class="hp" name="email_address_check" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="err" id="mErr" role="alert"></div>
-      <button class="btn" type="submit" id="mBtn">Baixar grátis</button>
-      <small id="mArch">Só usamos seu e-mail para falar do LUUZI. Sem spam.</small>
+      <button class="btn" type="submit" id="mBtn" data-t="m.btn">Baixar grátis</button>
+      <small id="mArch"></small>
     </form>
     <div class="done">
       <div class="check"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-      <h3>Seu download começou</h3>
-      <p>Obrigado por ajudar a construir o LUUZI. Se o download não começar, <a id="dlAgain" href="#">clique aqui</a>.</p>
+      <h3 data-t="m.done">Seu download começou</h3>
+      <p><span data-t="m.thanks">Obrigado por ajudar a construir o LUUZI. Se o download não começar,</span> <a id="dlAgain" href="#" data-t="m.again">clique aqui</a>.</p>
     </div>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   EDITE AQUI — downloads, cadastro, prints e textos dos exemplos
+   EDITE AQUI — downloads, cadastro, prints e textos
    ============================================================ */
 /* Um link por tipo de Mac. Hoje o build é universal (roda nos dois), então os dois apontam para o mesmo arquivo.
    Quando houver builds separados, troque cada link. */
@@ -491,22 +516,81 @@ const DOWNLOADS = {
 /* Formulário "LUUZI Alpha - download" no Brevo (lista LUUZI Alpha). Os cadastros aparecem em Brevo › Contatos. */
 const BREVO_FORM_URL = "https://6cc41f43.sibforms.com/serve/MUIFAGM8vY_3BiW1ztNeYYENZjSV2amEx3zmA9ZS9YfxgEZLYC0cGQ2bniK91mR9GMZ-JBt5NKorAAswS_v_jq8S4tin3-w8FtJJrkIs6dzQ4wXJqoIHRJ7IptI3O6TcWxdyG4NbTrXkN8RywGxusbsjsfzDr1ngE0DZWWLtFvxY2pdd_PTSiEERx48jKtTSb_AQI188V56aAp72wQ==";
 
-/* Prints do app (pasta prints/). Para acrescentar, salve a imagem lá e ponha uma linha aqui. */
+/* Prints do app, em prints/pt-NOME.png e prints/en-NOME.png. Ordem das abas na seção "Tudo num app só". */
 const PRINTS = [
-  ["Rolagem suave", "prints/rolagem-suave.png"],
+  ["rolagem",    "Rolagem suave", "Smooth Scrolling"],
+  ["cursor",     "Cursor",        "Pointer"],
+  ["botoes",     "Botões",        "Buttons"],
+  ["gestos",     "Gestos",        "Gestures"],
+  ["arrastar",   "Arrastar",      "Drag"],
+  ["autoscroll", "Auto Scroll",   "Autoscroll"],
 ];
 
+/* "Configure no LUUZI": onde o cursor clica em cada print (frações da imagem, de 0 a 1).
+   at = ponto do clique · ring = destaque [x, y, largura, altura] · zoom = ampliação do print
+   slider = arrasta o controle de [x inicial, x final, y, começo do trilho] */
+const CONFIG = {
+  rolagem:    { at:[.400,.53], ring:[.342,.458,.120,.137], zoom:1.7 },
+  botoes:     { at:[.355,.379], ring:[.296,.355,.116,.048], zoom:1.8 },
+  gestos:     { at:[.475,.549], ring:[.213,.508,.425,.080], zoom:1.7 },
+  autoscroll: { at:[.242,.930], ring:[.211,.885,.062,.105], zoom:1.8 },
+  cursor:     { at:[.310,.273], slider:[.310,.560,.273,.210], zoom:1.8 },
+};
+
+/* Textos em português (Brasil) e inglês (resto do mundo). As chaves batem com data-t="..." na página. */
+const TEXT = {
+  pt: {
+    "title":"LUUZI — seu mouse, fluido no Mac",
+  },
+  en: {
+    "title":"LUUZI — your mouse, as fluid as your Mac",
+    "top.cta":"Download free",
+    "hero.h":'Your mouse,<br><span class="grad">as fluid as your Mac.</span>',
+    "hero.p":"Any mouse, with the smoothness and shortcuts of a trackpad. Your way.",
+    "hero.cta":"Download the free alpha", "hero.see":"See what it does", "hero.scroll":"scroll",
+    "rol.h":"Smooth Scrolling", "rol.p":"Every turn of the wheel becomes one continuous, gentle glide, just like a trackpad.",
+    "rol.chips":'<span class="chip">Works in <b>every app</b></span><span class="chip">Trackpad <b>momentum</b></span><span class="chip">Speed <b>your way</b></span>',
+    "rol.bar":"mouse wheel ↓", "rol.off":"Without LUUZI", "rol.on":"With LUUZI",
+    "bot.h":"Buttons", "bot.p":"Each button does what you want: back, close tab, open an app, a shortcut. And it switches on its own with the app in front.",
+    "bot.chips":'<span class="chip"><b>Per app</b></span><span class="chip"><b>Per mouse</b></span><span class="chip"><b>Per display</b></span>',
+    "ges.h":"Gestures", "ges.p":"Hold a button and draw with the mouse. Switching Spaces, opening Mission Control or showing the desktop is one gesture away.",
+    "ges.left":"Space to the right", "ges.right":"Space to the left", "ges.up":"Mission Control", "ges.down":"Show Desktop",
+    "ges.d1":"Desktop 1", "ges.d2":"Desktop 2", "ges.d3":"Desktop 3",
+    "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go. The icon stretches along, like a rubber band.",
+    "auto.chips":'<span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Drag</b> the content</span>', "auto.bar":"article.html",
+    "cur.h":"Pointer", "cur.p":"Faster on the big monitor, precise in Figma. Every mouse at the right speed. Try it here.", "cur.speed":"Speed", "cur.bar":"move your mouse here",
+    "inf.h":'One star.<br><span class="grad">Endless possibilities.</span>',
+    "inf.p":"Stars form endless constellations. In LUUZI, every setting is a star: combine buttons, gestures and speeds per app, per mouse and per display, and shape your mouse your way.",
+    "app.h":"All in one app.", "app.p":"Simple to set up, with instant testing.",
+    "dl.h":'Use it before everyone else.<br><span class="grad">For free.</span>',
+    "dl.p":'The alpha is free for everyone who tries it before the official launch. And those who help build LUUZI now will get a <b style="color:var(--text)">special offer at launch</b>.',
+    "dl.perks":"<span><b>Free</b>during the alpha</span><span><b>Automatic</b>updates</span>", "dl.btn":"Download LUUZI alpha",
+    "m.h":"Download LUUZI alpha", "m.p":"Free. Leave your name and email to secure the special launch offer.",
+    "m.name":"Name", "m.email":"Email", "m.btn":"Download free", "m.done":"Your download has started",
+    "m.thanks":"Thanks for helping build LUUZI. If the download doesn't start,", "m.again":"click here",
+  },
+};
+/* Textos usados pelo código (os dois idiomas lado a lado) */
+const S = {
+  step1:["Configure no LUUZI","Set it up in LUUZI"], step2:["Na prática","In action"],
+  req:["Grátis · macOS 14 ou mais novo · Apple Silicon e Intel","Free · macOS 14 or later · Apple Silicon and Intel"],
+  reqArch:["Grátis · macOS 14 ou mais novo · versão para Mac com ","Free · macOS 14 or later · version for Macs with "],
+  reqNoMac:["O LUUZI é para Mac (macOS 14 ou mais novo). Cadastre-se e baixe no seu Mac.","LUUZI is for Mac (macOS 14 or later). Sign up and download it on your Mac."],
+  privacy:["Só usamos seu e-mail para falar do LUUZI. Sem spam.","We only use your email to talk about LUUZI. No spam."],
+  forMac:["Versão para Mac com ","Version for Macs with "],
+  errName:["Diga seu nome.","Tell us your name."], errEmail:["Confira o e-mail.","Check your email."], sending:["Enviando…","Sending…"],
+  printAlt:["Tela do LUUZI: ","LUUZI screen: "],
+};
 const BUTTONS = [ // botão do mouse → ação, por app
-  { app:"Safari", maps:[[3,"4 · VOLTAR","Voltar ⌘["],[4,"5 · AVANÇAR","Avançar ⌘]"],[2,"3 · MEIO","Fechar aba ⌘W"]] },
-  { app:"Figma",  maps:[[3,"4 · VOLTAR","Desfazer ⌘Z"],[4,"5 · AVANÇAR","Refazer ⌘⇧Z"],[2,"3 · MEIO","Mission Control"]] },
-  { app:"Finder", maps:[[3,"4 · VOLTAR","Espaço à esquerda"],[4,"5 · AVANÇAR","Espaço à direita"],[2,"3 · MEIO","Abrir Música"]] },
+  { app:"Safari", maps:[[3,"4 · VOLTAR|4 · BACK","Voltar ⌘[|Back ⌘["],[4,"5 · AVANÇAR|5 · FORWARD","Avançar ⌘]|Forward ⌘]"],[2,"3 · MEIO|3 · MIDDLE","Fechar aba ⌘W|Close tab ⌘W"]] },
+  { app:"Figma",  maps:[[3,"4 · VOLTAR|4 · BACK","Desfazer ⌘Z|Undo ⌘Z"],[4,"5 · AVANÇAR|5 · FORWARD","Refazer ⌘⇧Z|Redo ⌘⇧Z"],[2,"3 · MEIO|3 · MIDDLE","Mission Control|Mission Control"]] },
+  { app:"Finder", maps:[[3,"4 · VOLTAR|4 · BACK","Espaço à esquerda|Space to the left"],[4,"5 · AVANÇAR|5 · FORWARD","Espaço à direita|Space to the right"],[2,"3 · MEIO|3 · MIDDLE","Abrir Música|Open Music"]] },
 ];
-
-/* Estrelas da constelação: cada uma é um ajuste do LUUZI (nome, x, y de 0 a 1). */
+/* Estrelas da constelação: cada uma é um ajuste do LUUZI ("pt|en", x, y de 0 a 1) */
 const STARS = [
-  ["Rolagem suave",.10,.30],["Velocidade",.20,.62],["Inércia",.30,.22],["Botões",.40,.52],["Por app",.50,.14],
-  ["Gestos",.60,.68],["Atalhos",.66,.30],["Auto Scroll",.76,.58],["Arrastar",.84,.22],["Cursor",.92,.50],
-  ["Por mouse",.26,.88],["Por tela",.72,.88],["Curvas",.46,.86],["Mission Control",.88,.82],["Spaces",.06,.72],
+  ["Rolagem suave|Smooth Scrolling",.10,.30],["Velocidade|Speed",.20,.62],["Inércia|Momentum",.30,.22],["Botões|Buttons",.40,.52],["Por app|Per app",.50,.14],
+  ["Gestos|Gestures",.60,.68],["Atalhos|Shortcuts",.66,.30],["Auto Scroll|Autoscroll",.76,.58],["Arrastar|Drag",.84,.22],["Cursor|Pointer",.92,.50],
+  ["Por mouse|Per mouse",.26,.88],["Por tela|Per display",.72,.88],["Curvas|Curves",.46,.86],["Mission Control|Mission Control",.88,.82],["Spaces|Spaces",.06,.72],
 ];
 const LINKS = [[0,2],[2,4],[4,6],[6,8],[8,9],[0,1],[1,3],[3,5],[5,7],[7,9],[3,4],[1,10],[10,12],[12,5],[5,11],[11,7],[7,13],[0,14],[14,1],[6,7],[12,11]];
 
@@ -523,6 +607,26 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const dpr = () => Math.min(2, window.devicePixelRatio || 1);
 $("#yr").textContent = new Date().getFullYear();
+
+/* ---------- idioma: português para o Brasil, inglês para o resto do mundo ---------- */
+let LANG = (() => {
+  try { const q=new URLSearchParams(location.search).get("lang"); if(q==="pt"||q==="en") return q; } catch(_){}
+  try { const s=localStorage.getItem("luuzi-lang"); if(s==="pt"||s==="en") return s; } catch(_){}
+  const langs=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||"en"]).map(l=>l.toLowerCase());
+  return langs[0].startsWith("pt") ? "pt" : "en";
+})();
+const L = pair => Array.isArray(pair) ? pair[LANG==="pt"?0:1] : String(pair).split("|")[LANG==="pt"?0:1] ?? pair;
+const ORIGINAL = {}; $$("[data-t]").forEach(el => { ORIGINAL[el.dataset.t] = ORIGINAL[el.dataset.t] ?? el.innerHTML; });
+const langListeners = [];
+function applyLang(){
+  document.documentElement.lang = LANG==="pt" ? "pt-BR" : "en";
+  document.title = (TEXT[LANG].title) || TEXT.pt.title;
+  $$("[data-t]").forEach(el => { const k=el.dataset.t; el.innerHTML = LANG==="pt" ? ORIGINAL[k] : (TEXT.en[k] ?? ORIGINAL[k]); });
+  $$(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang===LANG));
+  $$(".dots a").forEach((a,i) => { const s=sections[i]; a.firstChild.textContent = LANG==="pt" ? s.dataset.title : (s.dataset.titleEn||s.dataset.title); });
+  langListeners.forEach(f => f());
+}
+$$(".lang button").forEach(b => b.addEventListener("click", () => { LANG=b.dataset.lang; try{ localStorage.setItem("luuzi-lang",LANG); }catch(_){} applyLang(); }));
 
 /* Curva Bézier cúbica, como a BezierCurve do app: devolve y para um x de 0 a 1 */
 function bezier(x1,y1,x2,y2){
@@ -553,7 +657,7 @@ function drawTrail(ctx, raw, {width=11, color=cssVar("--accent"), glow=.35, eras
 
 /* ---------- seções: entrada, navegação e fundo ---------- */
 const sections = $$("main section"), nav = $(".dots"), blobs = $$(".blob");
-sections.forEach(s => { const a = document.createElement("a"); a.href = "#"+s.id; a.innerHTML = `<span>${s.dataset.title}</span>`; nav.appendChild(a); });
+sections.forEach(s => { const a = document.createElement("a"); a.href = "#"+s.id; a.innerHTML = `<span></span>`; nav.appendChild(a); });
 const navLinks = $$(".dots a"), active = new Set();
 const io = new IntersectionObserver(es => es.forEach(e => {
   const s = e.target, i = sections.indexOf(s);
@@ -580,13 +684,65 @@ const isOn = id => active.has(id);
     ctx.globalAlpha=1; })(0);
 })();
 
+/* ---------- "Configure no LUUZI" → "Na prática", em cada palco ---------- */
+(function(){
+  $$(".stage[data-cfg]").forEach(stage => {
+    const id=stage.dataset.cfg, c=CONFIG[id], section=stage.closest("section").id;
+    const box=document.createElement("div"); box.className="cfg";
+    box.innerHTML=`<div class="shot"><img alt=""><div class="ring"></div><div class="patch"></div><div class="bar"></div><div class="knob"></div><span class="ripple"></span>
+      <svg class="ccur" viewBox="0 0 22 22"><use href="#pointer"/></svg></div>`;
+    const step=document.createElement("div"); step.className="step"; step.innerHTML="<span></span><span></span>";
+    stage.append(box, step);
+    const shot=box.querySelector(".shot"), img=box.querySelector("img"), ring=box.querySelector(".ring"), cur=box.querySelector(".ccur"), rip=box.querySelector(".ripple"),
+          bar=box.querySelector(".bar"), knob=box.querySelector(".knob"), patch=box.querySelector(".patch"), [s1,s2]=step.children;
+    const setLang=()=>{ img.src=`prints/${LANG}-${id}.png`; img.alt=L(S.printAlt)+id; s1.textContent=L(S.step1); s2.textContent=L(S.step2); };
+    setLang(); langListeners.push(setLang);
+    if(c.ring){ const [x,y,w,h]=c.ring; Object.assign(ring.style,{left:x*100+"%",top:y*100+"%",width:w*100+"%",height:h*100+"%"}); }
+    const pct=(x,y)=>[x*100+"%",y*100+"%"];
+    // print ampliado com o ponto do clique no centro do palco
+    const frame=()=>{ const W=stage.clientWidth, H=stage.clientHeight, w=W*c.zoom, h=w/1.463;
+      let tx=W/2-c.at[0]*w, ty=H/2-c.at[1]*h; tx=Math.min(0,Math.max(W-w,tx)); ty=Math.min(0,Math.max(H-h,ty));
+      shot.style.width=w+"px"; return {tx,ty,w,h}; };
+    const placeCur=(x,y,ms)=>{ cur.style.transition=`left ${ms}ms var(--ease), top ${ms}ms var(--ease)`; cur.style.left=`calc(${x*100}% - 3px)`; cur.style.top=`calc(${y*100}% - 2px)`; };
+    const click=async()=>{ cur.style.transition+=", transform .15s"; cur.style.transform="scale(.85)"; rip.style.left=cur.style.left.replace("- 3px","+ 0px"); rip.style.top=cur.style.top.replace("- 2px","+ 0px");
+      rip.classList.remove("go"); void rip.offsetWidth; rip.classList.add("go"); await sleep(150); cur.style.transform=""; };
+    async function run(){
+      while(true){
+        while(!isOn(section)) await sleep(300);
+        // 1 · configurar
+        const f=frame(); shot.style.transition="none"; shot.style.transform=`translate(${f.tx}px,${f.ty+40}px) scale(.96)`;
+        ring.classList.remove("show"); [bar,knob,patch].forEach(e=>e.style.display="none");
+        placeCur(c.at[0]+.12, c.at[1]+.16, 0);
+        stage.classList.add("cfg-on"); s1.classList.add("on"); s2.classList.remove("on");
+        await sleep(30); shot.style.transition=""; shot.style.transform=`translate(${f.tx}px,${f.ty}px)`;
+        await sleep(900);
+        placeCur(c.at[0], c.at[1], 1100); await sleep(1150);
+        await click();
+        if(c.slider){ const [x0,x1,y,start]=c.slider;
+          Object.assign(patch.style,{display:"block",left:x0*100+"%",top:y*100+"%"});
+          Object.assign(bar.style,{display:"block",left:start*100+"%",top:y*100+"%"});
+          Object.assign(knob.style,{display:"block",top:y*100+"%"});
+          const t0=performance.now(); await new Promise(res=>{ const g=n=>{ const p=Math.min(1,(n-t0)/1200), e=easeInOut(p), x=x0+(x1-x0)*e;
+            knob.style.left=x*100+"%"; bar.style.width=(x-start)*100+"%"; cur.style.transition="none"; cur.style.left=`calc(${x*100}% - 3px)`; p<1?requestAnimationFrame(g):res(); }; requestAnimationFrame(g); });
+        }
+        ring.classList.add("show");
+        await sleep(1300);
+        // 2 · na prática
+        stage.classList.remove("cfg-on"); s1.classList.remove("on"); s2.classList.add("on");
+        await sleep(id==="gestos"?9000:6500);
+      }
+    }
+    run();
+  });
+})();
+
 /* ---------- 2. rolagem suave: degraus x deslize contínuo ---------- */
 (function(){
   const colors=["#E8562A","#3B5BFF","#FF4FA3","#2E9A64","#8A4FE8","#febc2e"];
-  const N=24, ROW=56;                       // cada linha: 46 de altura + 10 de margem
+  const N=24, ROW=56;
   const fill=el=>{ for(let i=0;i<N*2;i++){ const d=document.createElement("div"); d.style.setProperty("--c",colors[i%6]+"bb"); d.style.setProperty("--w",(40+((i*37)%45))+"%"); el.appendChild(d);} };
   const A=$("#feedA"), B=$("#feedB"); fill(A); fill(B);
-  const LOOP=N*ROW, NOTCH=70, EVERY=.24;    // um giro da roda a cada 0,24 s
+  const LOOP=N*ROW, NOTCH=70, EVERY=.24;
   let target=0, y=0, last=performance.now(), acc=0;
   (function tick(now){
     requestAnimationFrame(tick);
@@ -602,23 +758,21 @@ const isOn = id => active.has(id);
 /* ---------- 3. botões ---------- */
 (function(){
   const maps=$("#maps"), tabs=$$("#apptabs span"), btns=$$(".mouse .btnz"); let a=0,k=0;
-  const render=()=>{ maps.innerHTML=BUTTONS[a].maps.map(m=>`<div class="map"><span class="n">${m[1]}</span><span class="arrow">→</span><span class="act">${m[2]}</span></div>`).join(""); tabs.forEach((t,i)=>t.classList.toggle("on",i===a)); };
-  render();
+  const render=()=>{ maps.innerHTML=BUTTONS[a].maps.map(m=>`<div class="map"><span class="n">${L(m[1])}</span><span class="arrow">→</span><span class="act">${L(m[2])}</span></div>`).join(""); tabs.forEach((t,i)=>t.classList.toggle("on",i===a)); $$("#maps .map").forEach((m,i)=>m.classList.toggle("on",i===k)); };
+  render(); langListeners.push(render);
   setInterval(()=>{ if(!isOn("botoes")) return;
-    k++; if(k>=BUTTONS[a].maps.length){ k=0; a=(a+1)%BUTTONS.length; render(); }
-    const b=BUTTONS[a].maps[k][0]; btns.forEach(el=>el.classList.toggle("on",+el.dataset.b===b));
-    $$("#maps .map").forEach((m,i)=>m.classList.toggle("on",i===k)); },1500);
+    k++; if(k>=BUTTONS[a].maps.length){ k=0; a=(a+1)%BUTTONS.length; }
+    render(); const b=BUTTONS[a].maps[k][0]; btns.forEach(el=>el.classList.toggle("on",+el.dataset.b===b)); },1500);
 })();
 
 /* ---------- 4. gestos: o traço do app + troca de Space ---------- */
-const GESTURES = { // traços de exemplo (0 a 1), começando onde fica a bolinha
+const GESTURES = {
   left:  [[.82,.52],[.62,.49],[.40,.47],[.18,.50]],
   right: [[.18,.48],[.40,.51],[.62,.53],[.82,.50]],
   up:    [[.50,.82],[.48,.62],[.49,.40],[.52,.18]],
   down:  [[.50,.18],[.52,.40],[.51,.62],[.48,.82]],
 };
 (function(){
-  // miniaturas como as do app (GestureThumb)
   const thumbs=$$("#gmap canvas");
   const drawThumbs=()=>thumbs.forEach(c=>{ const x=c.getContext("2d"); x.clearRect(0,0,c.width,c.height);
     drawTrail(x, GESTURES[c.dataset.dir].map(([a,b])=>[a*c.width,b*c.height]), {width:8,color:cssVar("--text"),glow:0}); });
@@ -628,7 +782,7 @@ const GESTURES = { // traços de exemplo (0 a 1), começando onde fica a bolinha
   let space=1; spaces.style.transform=`translateX(-${space*100}%)`;
   const size=()=>{ const r=stage.getBoundingClientRect(); cv.width=r.width*dpr(); cv.height=r.height*dpr(); return r; };
   const anim=(dur,fn)=>new Promise(res=>{ const t0=performance.now(); const f=n=>{ const p=Math.min(1,(n-t0)/dur); fn(p); p<1?requestAnimationFrame(f):res(); }; requestAnimationFrame(f); });
-  const waitOn=async()=>{ while(!isOn("gestos")) await sleep(300); };
+  const waitOn=async()=>{ while(!isOn("gestos") || stage.classList.contains("cfg-on")) await sleep(300); };
   const place=(x,y)=>cur.style.transform=`translate(${x-3}px,${y-2}px)`;
   async function gesture(dir){
     const r=size(), k=dpr(), dx=dir==="left"?-1:dir==="right"?1:0;
@@ -645,7 +799,7 @@ const GESTURES = { // traços de exemplo (0 a 1), começando onde fica a bolinha
     pill.textContent=$(`#gmap div[data-g="${dir}"]`).textContent.trim();
     pill.style.left=ex+"px"; pill.style.top=(ey-24)+"px"; pill.classList.add("show");
     if(dx){ space=Math.max(0,Math.min(2,space+(dx<0?1:-1))); spaces.style.transform=`translateX(-${space*100}%)`; }
-    await anim(550,p=>{ ctx.clearRect(0,0,r.width,r.height); drawTrail(ctx,drawn,{erased:easeInOut(p)}); });   // sai apagando
+    await anim(550,p=>{ ctx.clearRect(0,0,r.width,r.height); drawTrail(ctx,drawn,{erased:easeInOut(p)}); });
     ctx.clearRect(0,0,r.width,r.height);
     await sleep(700); pill.classList.remove("show"); await sleep(450);
   }
@@ -657,16 +811,14 @@ const GESTURES = { // traços de exemplo (0 a 1), começando onde fica a bolinha
 (function(){
   const st=$("#aStage"), page=$("#page"), cur=$("#aCursor"), svg=$("#anchor"), disc=$("#aDisc"), dot=$("#aDot"), ag=$("#aArrows");
   let html=""; for(let i=0;i<14;i++){ html+=`<p class="h"></p><p></p><p style="width:92%"></p><p style="width:80%"></p>${i%2?'<p class="img"></p>':''}<p></p><p style="width:65%"></p>`; } page.innerHTML=html;
-  // setas do Clássico: triângulos no topo, girados 0/90/180/270
-  const S=52, arrows=[0,90,180,270].map(rot=>{ const p=document.createElementNS("http://www.w3.org/2000/svg","path");
-    const w=S*.18,h=S*.12,top=S*.12-S/2; p.setAttribute("d",`M0 ${top} L${w/2} ${top+h} L${-w/2} ${top+h}Z`); p.setAttribute("transform",`rotate(${rot})`); ag.appendChild(p); return p; });
-  // valores padrão do app (AnchorStyle)
-  const AMOUNT=.81, RANGE=305, FOLLOW=.37, curve=bezier(.31,0,.6,1);
+  const S0=52, arrows=[0,90,180,270].map(rot=>{ const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    const w=S0*.18,h=S0*.12,top=S0*.12-S0/2; p.setAttribute("d",`M0 ${top} L${w/2} ${top+h} L${-w/2} ${top+h}Z`); p.setAttribute("transform",`rotate(${rot})`); ag.appendChild(p); return p; });
+  const AMOUNT=.81, RANGE=305, FOLLOW=.37, curve=bezier(.31,0,.6,1);   // valores padrão do app (AnchorStyle)
   let y=0, last=performance.now(), t0=last;
   (function tick(now){
     requestAnimationFrame(tick);
     const dt=Math.min(.05,(now-last)/1000); last=now;
-    if(!isOn("autoscroll")) return;
+    if(!isOn("autoscroll") || st.classList.contains("cfg-on")) { t0=now; return; }
     const r=st.getBoundingClientRect(), ax=r.width/2, ay=r.height*.42;
     const T=((now-t0)/1000)%7.5;
     let ox=0, oy=0, show=false;
@@ -675,8 +827,8 @@ const GESTURES = { // traços de exemplo (0 a 1), começando onde fica a bolinha
     svg.classList.toggle("show",show);
     const d=Math.hypot(ox,oy), pull=curve(d/RANGE*1.6), a=AMOUNT*pull, ang=Math.atan2(oy,ox)*180/Math.PI, ux=d?ox/d:0, uy=d?oy/d:0;
     svg.style.transform=`translate(${ax}px,${ay}px)`;
-    disc.setAttribute("transform",`translate(${ux*a*S*.5} ${uy*a*S*.5}) rotate(${ang}) scale(${1+a} ${1-a*.35}) rotate(${-ang})`);
-    const k=FOLLOW*pull*.18*S*1.4; dot.setAttribute("cx",ux*k); dot.setAttribute("cy",uy*k);
+    disc.setAttribute("transform",`translate(${ux*a*S0*.5} ${uy*a*S0*.5}) rotate(${ang}) scale(${1+a} ${1-a*.35}) rotate(${-ang})`);
+    const k=FOLLOW*pull*.18*S0*1.4; dot.setAttribute("cx",ux*k); dot.setAttribute("cy",uy*k);
     const acc=cssVar("--accent-2");
     arrows.forEach((p,i)=>{ const on=(i===2&&oy>8)||(i===0&&oy<-8)||(i===1&&ox>14)||(i===3&&ox<-14);
       p.setAttribute("fill",on?acc:"#fff"); p.setAttribute("fill-opacity",on?1:.92); p.style.filter=on?`drop-shadow(0 0 3px ${acc})`:"none"; });
@@ -721,26 +873,27 @@ const GESTURES = { // traços de exemplo (0 a 1), começando onde fica a bolinha
     const acc=cssVar("--accent"), text=cssVar("--text"), dim=cssVar("--dim"), line=cssVar("--star-line"), font=getComputedStyle(document.body).fontFamily;
     const P=STARS.map(([n,x,y],i)=>[x*r.width + Math.sin(now/2400+i)*4, y*r.height + Math.cos(now/2000+i*1.7)*4]);
     const T=(now-t0)/1000;
-    LINKS.forEach(([a,b],i)=>{ const p=Math.min(1,Math.max(0,(T-i*.12)/.6)); if(!p) return;          // linhas se desenhando uma a uma
+    LINKS.forEach(([a,b],i)=>{ const p=Math.min(1,Math.max(0,(T-i*.12)/.6)); if(!p) return;
       const e=easeInOut(p), [x1,y1]=P[a], [x2,y2]=P[b];
       ctx.strokeStyle=line; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x1+(x2-x1)*e,y1+(y2-y1)*e); ctx.stroke(); });
     STARS.forEach(([name],i)=>{ const [x,y]=P[i], near=mx>=0 && Math.hypot(mx-x,my-y)<80, tw=.6+.4*Math.sin(now/700+i*2), rad=(near?7:4)+tw*1.5;
       ctx.save(); ctx.shadowColor=acc; ctx.shadowBlur=near?24:12; ctx.fillStyle=near?acc:text; ctx.globalAlpha=near?1:.85;
       ctx.beginPath(); ctx.arc(x,y,rad*.55,0,7); ctx.fill(); ctx.restore();
       ctx.font=`${near?600:500} ${near?14:12.5}px ${font}`; ctx.textAlign="center"; ctx.fillStyle=near?text:dim;
-      ctx.globalAlpha=Math.min(1,Math.max(0,(T-.3-i*.08)/.5)); ctx.fillText(name,x,y-14); ctx.globalAlpha=1; });
-    const cx=r.width*.5, cy=r.height*.44, s=Math.min(r.width,r.height)*.12*(1+.04*Math.sin(now/900));   // a estrela do LUUZI no meio
+      ctx.globalAlpha=Math.min(1,Math.max(0,(T-.3-i*.08)/.5)); ctx.fillText(L(name),x,y-14); ctx.globalAlpha=1; });
+    const cx=r.width*.5, cy=r.height*.44, s=Math.min(r.width,r.height)*.12*(1+.04*Math.sin(now/900));
     ctx.save(); ctx.translate(cx-s/2,cy-s/2); ctx.scale(s/240,s/234); ctx.shadowColor=acc; ctx.shadowBlur=40; ctx.fillStyle=acc; ctx.fill(starPath); ctx.restore();
   })(0);
 })();
 
 /* ---------- 8. prints do app ---------- */
 (function(){
-  const box=$("#shots"), img=$("#shot");
-  if(PRINTS.length<2){ box.style.display="none"; return; }
-  PRINTS.forEach(([n,src],i)=>{ const b=document.createElement("button"); b.textContent=n; if(!i) b.classList.add("on");
-    b.onclick=()=>{ img.style.opacity=0; setTimeout(()=>{ img.src=src; img.alt="Tela "+n+" do LUUZI"; img.style.opacity=1; },250); $$("#shots button").forEach(x=>x.classList.toggle("on",x===b)); };
-    box.appendChild(b); });
+  const box=$("#shots"), img=$("#shot"); let cur=0;
+  const show=i=>{ cur=i; const [id,pt,en]=PRINTS[i]; img.style.opacity=0;
+    setTimeout(()=>{ img.src=`prints/${LANG}-${id}.png`; img.alt=L(S.printAlt)+(LANG==="pt"?pt:en); img.style.opacity=1; },200);
+    $$("#shots button").forEach((b,k)=>b.classList.toggle("on",k===i)); };
+  const render=()=>{ box.innerHTML=""; PRINTS.forEach(([id,pt,en],i)=>{ const b=document.createElement("button"); b.textContent=LANG==="pt"?pt:en; b.onclick=()=>show(i); box.appendChild(b); }); show(cur); };
+  render(); langListeners.push(render);
 })();
 
 /* ---------- download: descobre o tipo de Mac ---------- */
@@ -755,11 +908,11 @@ async function detectArch(){
   return null;
 }
 const isMac=/Mac/.test(navigator.platform||navigator.userAgent) && !/iPhone|iPad/.test(navigator.userAgent) && !(navigator.maxTouchPoints>1);
-detectArch().then(a=>{ ARCH=a;
-  const name=a==="arm"?"Apple Silicon":a==="intel"?"Intel":null;
-  if(isMac && name){ $("#req").textContent=`Grátis · macOS 14 ou mais novo · versão para Mac com ${name}`; $("#mArch").textContent=`Versão para Mac com ${name}. Só usamos seu e-mail para falar do LUUZI.`; }
-  else if(!isMac){ $("#req").textContent="O LUUZI é para Mac (macOS 14 ou mais novo). Cadastre-se e baixe no seu Mac."; }
-});
+const archText=()=>{ const name=ARCH==="arm"?"Apple Silicon":ARCH==="intel"?"Intel":null;
+  $("#req").textContent = !isMac ? L(S.reqNoMac) : name ? L(S.reqArch)+name : L(S.req);
+  $("#mArch").textContent = (isMac&&name ? L(S.forMac)+name+". " : "") + L(S.privacy); };
+langListeners.push(archText);
+detectArch().then(a=>{ ARCH=a; archText(); });
 const downloadUrl=()=>DOWNLOADS[ARCH||"arm"];
 
 /* ---------- cadastro antes do download ---------- */
@@ -776,15 +929,17 @@ const downloadUrl=()=>DOWNLOADS[ARCH||"arm"];
   form.addEventListener("submit",async e=>{
     e.preventDefault(); err.textContent="";
     const nome=form.NOME.value.trim(), email=form.EMAIL.value.trim();
-    if(!nome){ err.textContent="Diga seu nome."; form.NOME.focus(); return; }
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ err.textContent="Confira o e-mail."; form.EMAIL.focus(); return; }
-    btn.disabled=true; btn.textContent="Enviando…";
-    const data=new FormData(form); data.append("locale","pt"); data.append("html_type","simple");
+    if(!nome){ err.textContent=L(S.errName); form.NOME.focus(); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ err.textContent=L(S.errEmail); form.EMAIL.focus(); return; }
+    const label=btn.textContent; btn.disabled=true; btn.textContent=L(S.sending);
+    const data=new FormData(form); data.append("locale",LANG==="pt"?"pt":"en"); data.append("html_type","simple");
     try{ await fetch(BREVO_FORM_URL+"?isAjax=1",{method:"POST",body:data,mode:"no-cors"}); }catch(_){ /* não impede o download */ }
-    sheet.classList.add("ok"); btn.disabled=false; btn.textContent="Baixar grátis"; form.reset();
+    sheet.classList.add("ok"); btn.disabled=false; btn.textContent=label; form.reset();
     startDownload();
   });
 })();
+
+applyLang();
 </script>
 </body>
 </html>
