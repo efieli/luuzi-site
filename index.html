@@ -516,6 +516,9 @@ const DOWNLOADS = {
 /* Formulário "LUUZI Alpha - download" no Brevo (lista LUUZI Alpha). Os cadastros aparecem em Brevo › Contatos. */
 const BREVO_FORM_URL = "https://6cc41f43.sibforms.com/serve/MUIFAGM8vY_3BiW1ztNeYYENZjSV2amEx3zmA9ZS9YfxgEZLYC0cGQ2bniK91mR9GMZ-JBt5NKorAAswS_v_jq8S4tin3-w8FtJJrkIs6dzQ4wXJqoIHRJ7IptI3O6TcWxdyG4NbTrXkN8RywGxusbsjsfzDr1ngE0DZWWLtFvxY2pdd_PTSiEERx48jKtTSb_AQI188V56aAp72wQ==";
 
+/* Ao trocar um print, aumente este número: o navegador de quem visita busca a imagem nova. */
+const PRINTS_V = 2;
+
 /* Prints do app, em prints/pt-NOME.png e prints/en-NOME.png. Ordem das abas na seção "Tudo num app só". */
 const PRINTS = [
   ["rolagem",    "Rolagem suave", "Smooth Scrolling"],
@@ -695,7 +698,7 @@ const isOn = id => active.has(id);
     stage.append(box, step);
     const shot=box.querySelector(".shot"), img=box.querySelector("img"), ring=box.querySelector(".ring"), cur=box.querySelector(".ccur"), rip=box.querySelector(".ripple"),
           bar=box.querySelector(".bar"), knob=box.querySelector(".knob"), patch=box.querySelector(".patch"), [s1,s2]=step.children;
-    const setLang=()=>{ img.src=`prints/${LANG}-${id}.png`; img.alt=L(S.printAlt)+id; s1.textContent=L(S.step1); s2.textContent=L(S.step2); };
+    const setLang=()=>{ img.src=`prints/${LANG}-${id}.png?v=${PRINTS_V}`; img.alt=L(S.printAlt)+id; s1.textContent=L(S.step1); s2.textContent=L(S.step2); };
     setLang(); langListeners.push(setLang);
     if(c.ring){ const [x,y,w,h]=c.ring; Object.assign(ring.style,{left:x*100+"%",top:y*100+"%",width:w*100+"%",height:h*100+"%"}); }
     const pct=(x,y)=>[x*100+"%",y*100+"%"];
@@ -889,7 +892,7 @@ const GESTURES = {
 (function(){
   const box=$("#shots"), img=$("#shot"); let cur=0;
   const show=i=>{ cur=i; const [id,pt,en]=PRINTS[i]; img.style.opacity=0;
-    setTimeout(()=>{ img.src=`prints/${LANG}-${id}.png`; img.alt=L(S.printAlt)+(LANG==="pt"?pt:en); img.style.opacity=1; },200);
+    setTimeout(()=>{ img.src=`prints/${LANG}-${id}.png?v=${PRINTS_V}`; img.alt=L(S.printAlt)+(LANG==="pt"?pt:en); img.style.opacity=1; },200);
     $$("#shots button").forEach((b,k)=>b.classList.toggle("on",k===i)); };
   const render=()=>{ box.innerHTML=""; PRINTS.forEach(([id,pt,en],i)=>{ const b=document.createElement("button"); b.textContent=LANG==="pt"?pt:en; b.onclick=()=>show(i); box.appendChild(b); }); show(cur); };
   render(); langListeners.push(render);
