@@ -55,9 +55,9 @@ const TEXT = {
     "cada.chips":'<span class="chip"><b>Smooth Scrolling</b></span><span class="chip"><b>Buttons</b></span><span class="chip"><b>Gestures</b></span><span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Pointer</b></span>',
     "inf.h":'One star.<br><span class="grad">Endless possibilities.</span>',
     "inf.p":"Stars form endless constellations.<br>In LUUZI, every setting is a star: combine buttons, gestures and speeds per app, per mouse and per display, and shape your mouse your way.",
-    "app.h":"All in one app.", "app.p":"Simple to set up.<br>Click around.",
+    "app.h":"All in one app.", "app.p":"Simple to set up. Click around.",
     "dl.h":'Use it before everyone else.<br><span class="grad">For free.</span>',
-    "dl.p":'The alpha is free for everyone who tries it before the official launch.<br>And those who help build LUUZI now will get a <b style="color:var(--text)">special offer at launch</b>.',
+    "dl.p":'<span class="one">The alpha is free for everyone who tries it before the official launch.</span><br>And those who help build LUUZI now will get a <b style="color:var(--text)">special offer at launch</b>.',
     "dl.perks":"<span><b>Free</b>during the alpha</span><span><b>Automatic</b>updates</span>", "dl.btn":"Download LUUZI alpha",
     "m.h":"Download LUUZI alpha", "m.p":"Leave your name and email to secure the special launch offer.",
     "m.name":"Name", "m.email":"Email", "m.btn":"Download free", "m.done":"Your download has started",
@@ -530,8 +530,8 @@ const GESTURES = {
     P.forEach(([x,y],i)=>{ const p=Math.min(1,Math.max(0,(T2-i*.07)/.7)); if(!p) return;
       const e=easeInOut(p), dx=cx-x, dy=cy-y, len=Math.hypot(dx,dy), ux=dx/len, uy=dy/len, L2=Math.max(0,len-R0);
       const gx=x+ux*L2*e, gy=y+uy*L2*e, gr=ctx.createLinearGradient(x,y,cx,cy);
-      gr.addColorStop(0,"rgba(232,86,42,.06)"); gr.addColorStop(1,"rgba(232,86,42,.5)");
-      ctx.strokeStyle=gr; ctx.lineWidth=1; ctx.setLineDash([2,5]); ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(gx,gy); ctx.stroke(); ctx.setLineDash([]);
+      gr.addColorStop(0,"rgba(232,86,42,.22)"); gr.addColorStop(1,"rgba(232,86,42,.75)");
+      ctx.strokeStyle=gr; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(gx,gy); ctx.stroke();
       if(p<1) return;
       const f=((now/1000)*.45+i*.137)%1, fx=x+ux*L2*f, fy=y+uy*L2*f;            // a luz vai até a estrela
       if(f>.9) hits++;
@@ -539,23 +539,10 @@ const GESTURES = {
       ctx.beginPath(); ctx.arc(fx,fy,1.8,0,7); ctx.fill(); ctx.restore(); });
     const s=Math.min(r.width,r.height)*.12*(1+.04*Math.sin(now/900)+.025*Math.min(hits,3));
     ctx.save(); ctx.translate(cx-s/2,cy-s/2); ctx.scale(s/240,s/234); ctx.shadowColor=acc; ctx.shadowBlur=40+hits*8; ctx.fillStyle=acc; ctx.fill(starPath); ctx.restore();
+    // o nome embaixo da estrela: todas as linhas chegam no LUUZI
+    ctx.save(); ctx.globalAlpha=Math.min(1,Math.max(0,(T-.6)/.8)); ctx.font=`800 ${Math.max(15,s*.24)}px ${font}`; ctx.textAlign="center"; ctx.textBaseline="top";
+    ctx.fillStyle=text; ctx.shadowColor=acc; ctx.shadowBlur=14; ctx.fillText("LUUZI",cx,cy+s*.62); ctx.restore();
   })(0);
-})();
-
-/* ---------- 8. a janela do LUUZI, para clicar ---------- */
-(function(){
-  const box=$("#appwin"); let cur="rolagem", on={};
-  const fit=()=>{ const w=box.clientWidth, k=w/640; box.style.height=440*k+"px"; const win=box.firstChild; if(win) win.style.transform=`scale(${k})`; };
-  const render=()=>{ box.innerHTML=""; const win=lzWindow(cur,on[cur]!==false); box.appendChild(win); fit(); };
-  box.addEventListener("click",e=>{
-    const item=e.target.closest(".lz-item"), tog=e.target.closest(".lz-tog"), opt=e.target.closest(".lz-opt,.lz-row"), sl=e.target.closest(".lz-sl"), win=box.firstChild;
-    if(item){ cur=item.dataset.s; lzShow(win,cur,on[cur]!==false); return; }
-    if(tog && tog.dataset.k==="acc"){ tog.classList.toggle("on"); return; }
-    if(tog){ on[cur]=!(on[cur]!==false); tog.classList.toggle("on",on[cur]); win.classList.toggle("lz-off",!on[cur]); return; }
-    if(opt){ opt.parentElement.querySelectorAll(".on").forEach(x=>x.classList.remove("on")); opt.classList.add("on"); return; }
-    if(sl){ const r=sl.getBoundingClientRect(), x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)); sl.querySelector(".f").style.width=sl.querySelector(".kn").style.left=(x*100)+"%"; }
-  });
-  render(); addEventListener("resize",fit); langListeners.push(render);
 })();
 
 /* ---------- download: descobre o tipo de Mac ---------- */
