@@ -4,8 +4,8 @@
 /* Um link por tipo de Mac. Hoje o build é universal (roda nos dois), então os dois apontam para o mesmo arquivo.
    Quando houver builds separados, troque cada link. */
 const DOWNLOADS = {
-  arm:   "https://efieli.github.io/luuzi-releases/alpha/LUUZI-0.1.0.222.zip",  // Apple Silicon (M1, M2, M3…)
-  intel: "https://efieli.github.io/luuzi-releases/alpha/LUUZI-0.1.0.222.zip",  // Intel
+  arm:   "https://efieli.github.io/luuzi-releases/alpha/LUUZI-0.1.0.223.zip",  // Apple Silicon (M1, M2, M3…)
+  intel: "https://efieli.github.io/luuzi-releases/alpha/LUUZI-0.1.0.223.zip",  // Intel
 };
 
 /* Formulário "LUUZI Alpha - download" no Brevo (lista LUUZI Alpha). Os cadastros aparecem em Brevo › Contatos. */
