@@ -900,7 +900,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
       <details class="qa"><summary data-t="faq.q4">O macOS diz que o app está “danificado” ou não deixa abrir</summary><div class="qa-a" data-t="faq.a4">Quase sempre é só a marca de “baixado da internet” que o macOS coloca nos arquivos. Abra o app <b>Terminal</b>, cole o comando abaixo e aperte Enter. Ele tira essa marca <b>só do LUUZI</b>, e depois o app abre.<br><code>xattr -dr com.apple.quarantine /Applications/LUUZI.app</code></div></details>
       <details class="qa"><summary data-t="faq.q5">Por que o LUUZI pede permissão de Acessibilidade?</summary><div class="qa-a" data-t="faq.a5">É a permissão que o macOS exige de qualquer app que lê os botões do mouse e manda rolagem, cliques e atalhos para outros apps. Sem ela, o LUUZI não consegue funcionar. Você pode desligá-la quando quiser em Ajustes do Sistema › Privacidade e Segurança.</div></details>
       <details class="qa"><summary data-t="faq.q6">O LUUZI coleta ou envia meus dados?</summary><div class="qa-a" data-t="faq.a6">Não. Seus ajustes e os registros de erros ficam só no seu Mac, em pastas que só o seu usuário acessa. O LUUZI só se conecta à internet para procurar atualizações. O e-mail do cadastro é usado só para falar do LUUZI.</div></details>
-      <details class="qa"><summary data-t="faq.q7">Quais Macs e mouses funcionam?</summary><div class="qa-a" data-t="faq.a7">Qualquer Mac com <b>macOS 14 Sonoma ou mais novo</b> (inclui o Sequoia), com chip Apple Silicon ou Intel. Funciona com mouses com fio, Bluetooth ou receptor USB, e também com o trackpad.</div></details>
+      <details class="qa"><summary data-t="faq.q7">Quais Macs e mouses funcionam?</summary><div class="qa-a" data-t="faq.a7">Qualquer Mac com <b>macOS 14 Sonoma ou mais novo</b> (inclui o Sequoia), com chip Apple Silicon ou Intel. Funciona com mouses com fio, Bluetooth ou receptor USB. O LUUZI é feito para mouses, não para o trackpad.</div></details>
       <details class="qa"><summary data-t="faq.q8">Um botão do meu mouse não aparece ou não funciona</summary><div class="qa-a" data-t="faq.a8">No LUUZI, abra a aba <b>Botões</b>, clique em “Identificar botão” e aperte o botão. Se o app do fabricante do mouse (como o de Logitech ou Razer) já usa esse botão, desligue a ação dele lá para o LUUZI poder assumir.</div></details>
       <details class="qa"><summary data-t="faq.q9">Como o LUUZI se atualiza?</summary><div class="qa-a" data-t="faq.a9">Sozinho. Você escolhe nos Ajustes do LUUZI entre atualizar manualmente, só ser avisado ou instalar automaticamente. Toda atualização é conferida pela assinatura digital antes de ser instalada.</div></details>
       <details class="qa"><summary data-t="faq.q10">É grátis? Posso ter problemas no alpha?</summary><div class="qa-a" data-t="faq.a10">O alpha é grátis, e quem ajudar agora terá uma condição especial no lançamento. Por ser uma versão de teste, pode ter falhas. Se algo travar, o LUUZI guarda um registro em Ajustes › Registro de erros, que ajuda a achar a causa.</div></details>
@@ -935,7 +935,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   </div>
 </div>
 
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 <script src="explorar.js?v=3"></script>
 </body>
 </html>

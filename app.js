@@ -77,7 +77,7 @@ const TEXT = {
     "faq.q6":"Does LUUZI collect or send my data?",
     "faq.a6":"No. Your settings and error logs stay on your Mac only, in folders only your user can access. LUUZI only goes online to look for updates. The email you sign up with is only used to talk about LUUZI.",
     "faq.q7":"Which Macs and mice work?",
-    "faq.a7":"Any Mac running <b>macOS 14 Sonoma or later</b> (Sequoia included), with an Apple Silicon or Intel chip. It works with wired, Bluetooth or USB-receiver mice, and with the trackpad too.",
+    "faq.a7":"Any Mac running <b>macOS 14 Sonoma or later</b> (Sequoia included), with an Apple Silicon or Intel chip. It works with wired, Bluetooth or USB-receiver mice. LUUZI is made for mice, not for the trackpad.",
     "faq.q8":"A button on my mouse doesn't show up or doesn't work",
     "faq.a8":"In LUUZI, open the <b>Buttons</b> tab, click “Identify button” and press the button. If your mouse maker's app (like Logitech's or Razer's) already uses that button, turn its action off there so LUUZI can take over.",
     "faq.q9":"How does LUUZI update?",
