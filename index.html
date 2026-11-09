@@ -93,7 +93,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ---------- topo e navegação ---------- */
 .top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:22px clamp(16px,4vw,48px)}
 /* fundo da barra do topo: desfoca o que passa por trás e some suavemente para baixo */
-.top::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-34px;z-index:-1;pointer-events:none;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 82%,transparent),color-mix(in srgb,var(--bg) 0%,transparent));-webkit-mask-image:linear-gradient(to bottom,#000 45%,transparent);mask-image:linear-gradient(to bottom,#000 45%,transparent)}
+.top::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-34px;z-index:-1;pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 41%,transparent),color-mix(in srgb,var(--bg) 0%,transparent));-webkit-mask-image:linear-gradient(to bottom,#000 45%,transparent);mask-image:linear-gradient(to bottom,#000 45%,transparent)}
 .top .mark{height:22px;width:auto}
 .top .right{display:flex;align-items:center;gap:10px}
 /* ícone da seção (o mesmo do menu do app) antes do título */
