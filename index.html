@@ -85,12 +85,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .dots a:hover span{opacity:1;transform:translateY(-50%)}
 
 /* ---------- seções ---------- */
-section{position:relative;z-index:1;min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:100px clamp(16px,6vw,80px) 70px}
+section{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;padding:clamp(70px,11vh,120px) clamp(16px,6vw,80px)}
+/* primeira dobra um pouco mais baixa que a tela: o começo da próxima aparece embaixo e mostra que tem mais */
+#inicio{min-height:80vh;min-height:80svh;padding-top:110px;padding-bottom:30px}
+h1,h2,h3{text-wrap:balance}
+p,.lead,.chip,.req{text-wrap:pretty}
 .wrap{width:100%;max-width:1160px;display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(32px,6vw,90px);align-items:center}
 .wrap.flip{grid-template-columns:1.15fr 1fr}
 .wrap.flip .copy{order:2}
 h1,h2{font-weight:800;letter-spacing:-.035em;line-height:1.02}
-h1{font-size:clamp(44px,8vw,104px)}
+h1{font-size:clamp(44px,7vw,96px)}
 h2{font-size:clamp(38px,5.4vw,68px);margin-bottom:18px}
 .lead{font-size:clamp(17px,1.6vw,20px);line-height:1.55;color:var(--dim);max-width:30em}
 .grad{background:linear-gradient(100deg,var(--text) 10%,var(--accent) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -167,15 +171,15 @@ section.in .r{opacity:1;transform:none;filter:none}
 .appwin .lz-item,.appwin .lz-tog,.appwin .lz-opt,.appwin .lz-row,.appwin .lz-sl{cursor:pointer}
 
 /* ---------- 1. início ---------- */
-#inicio .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
-.star-hero{width:clamp(110px,15vw,170px);aspect-ratio:240/234;position:relative;margin-bottom:-6px}
+#inicio .wrap{grid-template-columns:1fr;text-align:center;justify-items:center;gap:0}
+.star-hero{width:clamp(96px,12vw,150px);aspect-ratio:240/234;position:relative;margin-bottom:-6px}
 .star-hero svg{width:100%;height:100%;overflow:visible;animation:float 7s var(--ease) infinite alternate}
 .star-hero .halo{position:absolute;inset:-70%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 50%,transparent),transparent 60%);filter:blur(30px);animation:breathe 6s var(--ease) infinite alternate}
 @keyframes breathe{from{opacity:.5;transform:scale(.9)}to{opacity:1;transform:scale(1.08)}}
 @keyframes float{from{transform:translateY(-5px) rotate(-3deg)}to{transform:translateY(6px) rotate(4deg)}}
 #inicio .lead{margin:20px auto 0;text-align:center}
 .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
-.hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:10px;letter-spacing:.1em;text-transform:uppercase}
+.hint{display:none;position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:10px;letter-spacing:.1em;text-transform:uppercase}
 .hint i{width:22px;height:34px;border:1.5px solid var(--line);border-radius:12px;position:relative}
 .hint i::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:7px;border-radius:2px;background:var(--accent);transform:translateX(-50%);animation:wheel 2s var(--ease) infinite}
 @keyframes wheel{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,12px)}}
@@ -265,18 +269,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
 
 /* ---------- 7. infinitas possibilidades ---------- */
-#infinito .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
+#infinito .wrap{grid-template-columns:1fr;text-align:center;justify-items:center;gap:0}
 #infinito .lead{margin:0 auto}
 .constellation{position:relative;width:100%;max-width:1000px;aspect-ratio:2.2/1;margin-top:30px}
 .constellation canvas{position:absolute;inset:0;width:100%;height:100%}
 
 /* ---------- 8. o app ---------- */
-#app .wrap{grid-template-columns:1fr;justify-items:center;text-align:center}
+#app .wrap{grid-template-columns:1fr;justify-items:center;text-align:center;gap:0}
 #app .lead{margin:0 auto}
 
 
 /* ---------- 9. baixar ---------- */
-#baixar .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
+#baixar .wrap{grid-template-columns:1fr;text-align:center;justify-items:center;gap:0}
 #baixar .lead{margin:0 auto}
 #baixar{padding-bottom:90px}
 .perks{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px}
@@ -368,14 +372,13 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
       <svg viewBox="0 0 241 234"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a5c"/><stop offset=".55" stop-color="#E8562A"/><stop offset="1" stop-color="#c63f17"/></linearGradient></defs><use href="#star" fill="url(#sg)"/></svg>
     </div>
     <h1 class="r" style="--i:1" data-t="hero.h">Seu mouse,<br><span class="grad">fluido como o Mac.</span></h1>
-    <p class="lead r" style="--i:2" data-t="hero.p">Qualquer mouse, com a fluidez e os atalhos de um trackpad. Do seu jeito.</p>
+    <p class="lead r" style="--i:2" data-t="hero.p">Qualquer mouse, com a fluidez e os atalhos de um trackpad.<br>Do seu jeito.</p>
     <div class="cta-row r" style="--i:3">
       <a class="btn" href="#baixar" data-t="hero.cta">Baixar alpha grátis</a>
       <a class="btn ghost" href="#rolagem" data-t="hero.see">Ver o que ele faz</a>
     </div>
   </div>
-  <div class="hint" aria-hidden="true"><i></i><span data-t="hero.scroll">role</span></div>
-</section>
+  </section>
 
 <!-- 2 · ROLAGEM SUAVE -->
 <section id="rolagem" data-title="Rolagem suave" data-title-en="Smooth Scrolling">
@@ -400,7 +403,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <div class="wrap flip">
     <div class="copy">
       <h2 class="r" style="--i:0" data-t="bot.h">Botões</h2>
-      <p class="lead r" style="--i:1" data-t="bot.p">Cada botão faz o que você quiser: voltar, fechar aba, abrir um app, um atalho. E muda sozinho conforme o app aberto.</p>
+      <p class="lead r" style="--i:1" data-t="bot.p">Cada botão faz o que você quiser: voltar, fechar aba, abrir um app, um atalho.<br>E muda sozinho conforme o app aberto.</p>
       <div class="chips r" style="--i:2" data-t="bot.chips"><span class="chip"><b>Por app</b></span><span class="chip"><b>Por mouse</b></span><span class="chip"><b>Por tela</b></span></div>
     </div>
     <div class="stage r" style="--i:1" data-cfg="botoes">
@@ -426,7 +429,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <div class="wrap">
     <div class="copy">
       <h2 class="r" style="--i:0" data-t="ges.h">Gestos</h2>
-      <p class="lead r" style="--i:1" data-t="ges.p">Segure um botão e desenhe com o mouse. Trocar de Space, abrir o Mission Control ou mostrar a mesa fica a um gesto.</p>
+      <p class="lead r" style="--i:1" data-t="ges.p">Segure um botão e desenhe com o mouse.<br>Trocar de Space, abrir o Mission Control ou mostrar a mesa fica a um gesto.</p>
       <div class="gesture-map r" style="--i:2" id="gmap">
         <div data-g="left"><canvas data-dir="left" width="76" height="76"></canvas><span data-t="ges.left">Espaço à direita</span></div>
         <div data-g="right"><canvas data-dir="right" width="76" height="76"></canvas><span data-t="ges.right">Espaço à esquerda</span></div>
@@ -459,7 +462,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <div class="wrap flip">
     <div class="copy">
       <h2 class="r" style="--i:0" data-t="auto.h">Auto Scroll</h2>
-      <p class="lead r" style="--i:1" data-t="auto.p">Clique e afaste o mouse: a página corre sozinha, mais rápido quanto mais longe. Sem girar a roda.</p>
+      <p class="lead r" style="--i:1" data-t="auto.p">Clique e afaste o mouse: a página corre sozinha, mais rápido quanto mais longe.<br>Sem girar a roda.</p>
       <div class="chips r" style="--i:2" data-t="auto.chips"><span class="chip"><b>Auto Scroll</b></span><span class="chip"><b>Arrastar</b> o conteúdo</span></div>
     </div>
     <div class="stage r" style="--i:1" id="aStage" data-cfg="autoscroll">
@@ -480,7 +483,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <div class="wrap">
     <div class="copy">
       <h2 class="r" style="--i:0" data-t="cur.h">Cursor</h2>
-      <p class="lead r" style="--i:1" data-t="cur.p">Mais rápido no monitor grande, preciso no Figma. Cada mouse na velocidade certa. Teste ao lado.</p>
+      <p class="lead r" style="--i:1" data-t="cur.p">Mais rápido no monitor grande, preciso no Figma.<br>Cada mouse na velocidade certa, teste ao lado.</p>
       <div class="slider r" style="--i:2">
         <label for="spd"><span data-t="cur.speed">Velocidade</span> <b id="spdOut">1.6×</b></label>
         <input id="spd" type="range" min="0.5" max="3" step="0.1" value="1.6">
@@ -503,7 +506,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 <section id="infinito" data-title="Possibilidades" data-title-en="Possibilities">
   <div class="wrap">
     <h2 class="r" style="--i:0" data-t="inf.h">Uma estrela.<br><span class="grad">Infinitas possibilidades.</span></h2>
-    <p class="lead r" style="--i:1" data-t="inf.p">As estrelas formam constelações sem fim. No LUUZI, cada ajuste é uma estrela: combine botões, gestos e velocidades por app, por mouse e por tela, e desenhe o mouse do seu jeito.</p>
+    <p class="lead r" style="--i:1" data-t="inf.p">As estrelas formam constelações sem fim.<br>No LUUZI, cada ajuste é uma estrela: combine botões, gestos e velocidades por app, por mouse e por tela, e desenhe o mouse do seu jeito.</p>
     <div class="constellation r" style="--i:2"><canvas id="const"></canvas></div>
   </div>
 </section>
@@ -512,7 +515,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 <section id="app" data-title="O app" data-title-en="The app">
   <div class="wrap">
     <h2 class="r" style="--i:0" data-t="app.h">Tudo num app só.</h2>
-    <p class="lead r" style="--i:1" data-t="app.p">Simples de ajustar. Clique e explore.</p>
+    <p class="lead r" style="--i:1" data-t="app.p">Simples de ajustar.<br>Clique e explore.</p>
     <div class="appwin r" style="--i:2" id="appwin"></div>
   </div>
 </section>
@@ -521,7 +524,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
 <section id="baixar" data-title="Baixar" data-title-en="Download">
   <div class="wrap">
     <h2 class="r" style="--i:0" data-t="dl.h">Use antes de todo mundo.<br><span class="grad">De graça.</span></h2>
-    <p class="lead r" style="--i:1" data-t="dl.p">O alpha é gratuito para quem experimentar antes do lançamento oficial. E quem ajudar a construir o LUUZI agora terá uma <b style="color:var(--text)">condição especial no lançamento</b>.</p>
+    <p class="lead r" style="--i:1" data-t="dl.p">O alpha é gratuito para quem experimentar antes do lançamento oficial.<br>E quem ajudar a construir o LUUZI agora terá uma <b style="color:var(--text)">condição especial no lançamento</b>.</p>
     <div class="perks r" style="--i:2" data-t="dl.perks"><span><b>Grátis</b>no alpha</span><span><b>Atualizações</b>automáticas</span></div>
     <div class="cta-row r" style="--i:3"><a class="btn big" data-signup href="#baixar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg><span data-t="dl.btn">Baixar LUUZI alpha</span></a></div>
     <p class="req r" style="--i:4" id="req"></p>
@@ -538,7 +541,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
     <form id="signup" novalidate>
       <svg class="st" viewBox="0 0 241 234"><use href="#star"/></svg>
       <h3 id="mTitle" data-t="m.h">Baixe o LUUZI alpha</h3>
-      <p data-t="m.p">Grátis. Deixe seu nome e e-mail para garantir a condição especial no lançamento.</p>
+      <p data-t="m.p">Deixe seu nome e e-mail e garanta a condição especial no lançamento.</p>
       <label class="field"><span data-t="m.name">Nome</span><input name="NOME" autocomplete="given-name" required></label>
       <label class="field"><span data-t="m.email">E-mail</span><input name="EMAIL" type="email" autocomplete="email" required></label>
       <input class="hp" name="email_address_check" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -595,26 +598,26 @@ const TEXT = {
     "title":"LUUZI — your mouse, as fluid as your Mac",
     "top.cta":"Download free",
     "hero.h":'Your mouse,<br><span class="grad">as fluid as your Mac.</span>',
-    "hero.p":"Any mouse, with the smoothness and shortcuts of a trackpad. Your way.",
+    "hero.p":"Any mouse, with the smoothness and shortcuts of a trackpad.<br>Your way.",
     "hero.cta":"Download the free alpha", "hero.see":"See what it does", "hero.scroll":"scroll",
     "rol.h":"Smooth Scrolling", "rol.p":"Every turn of the wheel becomes one continuous, gentle glide, just like a trackpad.",
     "rol.chips":'<span class="chip">Works in <b>every app</b></span><span class="chip">Trackpad <b>momentum</b></span><span class="chip">Speed <b>your way</b></span>',
     "rol.bar":"mouse wheel ↓", "rol.off":"Without LUUZI", "rol.on":"With LUUZI",
-    "bot.h":"Buttons", "bot.p":"Each button does what you want: back, close tab, open an app, a shortcut. And it switches on its own with the app in front.",
+    "bot.h":"Buttons", "bot.p":"Each button does what you want: back, close tab, open an app, a shortcut.<br>And it switches on its own with the app in front.",
     "bot.chips":'<span class="chip"><b>Per app</b></span><span class="chip"><b>Per mouse</b></span><span class="chip"><b>Per display</b></span>',
-    "ges.h":"Gestures", "ges.p":"Hold a button and draw with the mouse. Switching Spaces, opening Mission Control or showing the desktop is one gesture away.",
+    "ges.h":"Gestures", "ges.p":"Hold a button and draw with the mouse.<br>Switching Spaces, opening Mission Control or showing the desktop is one gesture away.",
     "ges.left":"Space to the right", "ges.right":"Space to the left", "ges.up":"Mission Control", "ges.down":"Show Desktop",
     "ges.d1":"Desktop 1", "ges.d2":"Desktop 2", "ges.d3":"Desktop 3",
-    "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go. No wheel spinning.",
+    "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go.<br>No wheel spinning.",
     "auto.chips":'<span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Drag</b> the content</span>', "auto.bar":"article.html",
-    "cur.h":"Pointer", "cur.p":"Faster on the big monitor, precise in Figma. Every mouse at the right speed. Try it here.", "cur.speed":"Speed", "cur.bar":"move your mouse here",
+    "cur.h":"Pointer", "cur.p":"Faster on the big monitor, precise in Figma.<br>Every mouse at the right speed, try it here.", "cur.speed":"Speed", "cur.bar":"move your mouse here",
     "inf.h":'One star.<br><span class="grad">Endless possibilities.</span>',
-    "inf.p":"Stars form endless constellations. In LUUZI, every setting is a star: combine buttons, gestures and speeds per app, per mouse and per display, and shape your mouse your way.",
-    "app.h":"All in one app.", "app.p":"Simple to set up. Click around.",
+    "inf.p":"Stars form endless constellations.<br>In LUUZI, every setting is a star: combine buttons, gestures and speeds per app, per mouse and per display, and shape your mouse your way.",
+    "app.h":"All in one app.", "app.p":"Simple to set up.<br>Click around.",
     "dl.h":'Use it before everyone else.<br><span class="grad">For free.</span>',
-    "dl.p":'The alpha is free for everyone who tries it before the official launch. And those who help build LUUZI now will get a <b style="color:var(--text)">special offer at launch</b>.',
+    "dl.p":'The alpha is free for everyone who tries it before the official launch.<br>And those who help build LUUZI now will get a <b style="color:var(--text)">special offer at launch</b>.',
     "dl.perks":"<span><b>Free</b>during the alpha</span><span><b>Automatic</b>updates</span>", "dl.btn":"Download LUUZI alpha",
-    "m.h":"Download LUUZI alpha", "m.p":"Free. Leave your name and email to secure the special launch offer.",
+    "m.h":"Download LUUZI alpha", "m.p":"Leave your name and email to secure the special launch offer.",
     "m.name":"Name", "m.email":"Email", "m.btn":"Download free", "m.done":"Your download has started",
     "m.thanks":"Thanks for helping build LUUZI. If the download doesn't start,", "m.again":"click here",
   },
@@ -666,6 +669,12 @@ let LANG = (() => {
 const L = pair => Array.isArray(pair) ? pair[LANG==="pt"?0:1] : String(pair).split("|")[LANG==="pt"?0:1] ?? pair;
 const ORIGINAL = {}; $$("[data-t]").forEach(el => { ORIGINAL[el.dataset.t] = ORIGINAL[el.dataset.t] ?? el.innerHTML; });
 const langListeners = [];
+function noOrphans(root){
+  // em cada trecho entre <br>, troca o último espaço por um espaço que não quebra
+  const lines=[[]], walk=document.createTreeWalker(root, NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+  while(walk.nextNode()){ const n=walk.currentNode; if(n.nodeName==="BR") lines.push([]); else if(n.nodeType===3) lines[lines.length-1].push(n); }
+  lines.forEach(nodes=>{ for(let i=nodes.length-1;i>=0;i--){ const t=nodes[i].nodeValue, k=t.trimEnd().lastIndexOf(" "); if(k>0){ nodes[i].nodeValue=t.slice(0,k)+" "+t.slice(k+1); break; } } });
+}
 function applyLang(){
   document.documentElement.lang = LANG==="pt" ? "pt-BR" : "en";
   document.title = (TEXT[LANG].title) || TEXT.pt.title;
@@ -673,6 +682,7 @@ function applyLang(){
   $$(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang===LANG));
   $$(".dots a").forEach((a,i) => { const s=sections[i]; a.firstChild.textContent = LANG==="pt" ? s.dataset.title : (s.dataset.titleEn||s.dataset.title); });
   langListeners.forEach(f => f());
+  $$('h1,h2,.lead,.sheet p,.perks span').forEach(noOrphans);
 }
 $$(".lang button").forEach(b => b.addEventListener("click", () => { LANG=b.dataset.lang; try{ localStorage.setItem("luuzi-lang",LANG); }catch(_){} applyLang(); }));
 
@@ -707,14 +717,16 @@ function drawTrail(ctx, raw, {width=11, color=cssVar("--accent"), glow=.35, eras
 const sections = $$("main section"), nav = $(".dots"), blobs = $$(".blob");
 sections.forEach(s => { const a = document.createElement("a"); a.href = "#"+s.id; a.innerHTML = `<span></span>`; nav.appendChild(a); });
 const navLinks = $$(".dots a"), active = new Set();
+const reveal = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("in", e.isIntersecting)), { threshold:0 });
+sections.forEach(s => reveal.observe(s));
 const io = new IntersectionObserver(es => es.forEach(e => {
   const s = e.target, i = sections.indexOf(s);
   if (e.isIntersecting) {
-    s.classList.add("in"); active.add(s.id);
+    active.add(s.id);
     navLinks.forEach((a,k) => a.classList.toggle("on", k===i));
     (AURA[i]||AURA[0]).forEach(([x,y],k) => blobs[k].style.transform = `translate(${x}vmax,${y}vmax)`);
-  } else { s.classList.remove("in"); active.delete(s.id); }
-}), { threshold:.45 });
+  } else { active.delete(s.id); }
+}), { threshold:.4 });
 sections.forEach(s => io.observe(s));
 const isOn = id => active.has(id);
 
