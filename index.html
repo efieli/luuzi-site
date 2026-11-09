@@ -604,6 +604,24 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 .btn.big{padding:18px 30px;font-size:17px;animation:pulse 3.2s var(--ease) infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 10px 40px -8px var(--accent)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.2) inset,0 14px 70px -4px var(--accent)}}
 #baixar .cta-row{margin-top:26px}
+.req.sub{margin-top:6px;opacity:.9}
+.req.sub a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.faq{max-width:780px;width:100%}
+.faq h2,.faq .lead{text-align:center}
+.faq .lead{margin-left:auto;margin-right:auto}
+.qa-list{margin-top:34px;display:grid;gap:10px;text-align:left}
+.qa{border:1px solid var(--line);border-radius:16px;background:var(--surface);backdrop-filter:blur(12px);transition:border-color .4s var(--ease),box-shadow .4s var(--ease)}
+.qa[open]{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));box-shadow:0 14px 50px -24px var(--accent)}
+.qa summary{cursor:pointer;list-style:none;padding:16px 48px 16px 18px;font-weight:600;font-size:16px;position:relative}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:"";position:absolute;right:20px;top:50%;width:8px;height:8px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);transform:translateY(-70%) rotate(45deg);transition:transform .4s var(--ease)}
+.qa[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.qa-a{padding:0 18px 18px;color:var(--dim);font-size:15px;line-height:1.6}
+.qa-a b{color:var(--text)}
+.qa-a ol{margin:0;padding-left:22px;display:grid;gap:8px}
+.qa-a small{display:block;margin-top:12px;font-size:13px}
+.qa-a code{font:500 13px var(--mono);background:var(--surface-2);padding:3px 7px;border-radius:7px;word-break:break-all;color:var(--text)}
+.faq footer{position:static;margin-top:44px}
 .req{margin-top:20px;font:500 12px var(--mono);color:var(--dim);letter-spacing:.06em}
 footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:12px;color:var(--dim)}
 
@@ -866,8 +884,30 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
     <div class="perks r" style="--i:2" data-t="dl.perks"><span><b>Grátis</b>no alpha</span><span><b>Atualizações</b>automáticas</span></div>
     <div class="cta-row r" style="--i:3"><a class="btn big" data-signup href="#baixar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg><span data-t="dl.btn">Baixar LUUZI alpha</span></a></div>
     <p class="req r" style="--i:4" id="req"></p>
+    <p class="req sub r" style="--i:5"><span data-t="dl.compat">Instalação manual no alpha. <a href="#faq">Veja o passo a passo</a></span></p>
   </div>
-  <footer>© <span id="yr"></span> LUUZI</footer>
+</section>
+
+<!-- 10 · DÚVIDAS -->
+<section id="faq" data-title="Dúvidas" data-title-en="FAQ">
+  <div class="wrap faq">
+    <h2 class="r" style="--i:0" data-t="faq.h">Dúvidas frequentes</h2>
+    <p class="lead r one" style="--i:1" data-t="faq.p">Tudo para instalar com tranquilidade.</p>
+    <div class="qa-list r" style="--i:2">
+      <details class="qa"><summary data-t="faq.q1">Isso é seguro? O LUUZI vai mexer no meu Mac?</summary><div class="qa-a" data-t="faq.a1">Sim. O LUUZI só faz o que você configura: lê os botões, a rolagem e o movimento do mouse para melhorá-los, e <b>não grava o que você digita</b>. Ele não envia seus dados para a internet: o único contato é a verificação de atualizações, e cada atualização só é instalada se tiver a <b>assinatura digital</b> do LUUZI. Ele ainda não é verificado pela Apple (veja a próxima pergunta), por isso o macOS pede uma confirmação na primeira vez.</div></details>
+      <details class="qa"><summary data-t="faq.q2">Por que o macOS diz que não pode verificar o desenvolvedor?</summary><div class="qa-a" data-t="faq.a2">A Apple só abre sem aviso os apps que passaram pela “notarização”, uma análise automática feita para quem está no programa de desenvolvedores. O LUUZI está no alpha e ainda não passou por ela. Isso <b>não quer dizer que tem vírus</b>: quer dizer só que a Apple ainda não analisou. Por isso você libera o app uma vez, como mostra o passo a passo abaixo.</div></details>
+      <details class="qa" open><summary data-t="faq.q3">Como instalar passo a passo?</summary><div class="qa-a" data-t="faq.a3"><ol><li><b>Baixe e abra o arquivo.</b> O Safari abre o .zip sozinho. Nos outros navegadores, dê dois cliques no arquivo. Vai aparecer o app LUUZI.</li><li><b>Arraste o LUUZI para a pasta Aplicativos.</b></li><li><b>Abra o LUUZI.</b> O macOS avisa que não pôde verificar o app. Clique em <b>OK</b> (ou Concluído). Não clique em “Mover para o Lixo”.</li><li>Abra <b>Ajustes do Sistema › Privacidade e Segurança</b>, role até a parte de Segurança e clique em <b>Abrir Mesmo Assim</b> no aviso do LUUZI. Confirme com a senha ou o Touch ID.</li><li>Clique em <b>Abrir</b>. Isso é só na primeira vez; depois o LUUZI abre normalmente.</li><li>Ligue a permissão em <b>Privacidade e Segurança › Acessibilidade</b>. O próprio LUUZI mostra o caminho e avisa se faltar alguma.</li></ol><small>Nas versões novas do macOS (Sequoia em diante) o atalho de clicar com o botão direito e escolher Abrir não funciona mais. O caminho certo é o dos Ajustes do Sistema.</small></div></details>
+      <details class="qa"><summary data-t="faq.q4">O macOS diz que o app está “danificado” ou não deixa abrir</summary><div class="qa-a" data-t="faq.a4">Quase sempre é só a marca de “baixado da internet” que o macOS coloca nos arquivos. Abra o app <b>Terminal</b>, cole o comando abaixo e aperte Enter. Ele tira essa marca <b>só do LUUZI</b>, e depois o app abre.<br><code>xattr -dr com.apple.quarantine /Applications/LUUZI.app</code></div></details>
+      <details class="qa"><summary data-t="faq.q5">Por que o LUUZI pede permissão de Acessibilidade?</summary><div class="qa-a" data-t="faq.a5">É a permissão que o macOS exige de qualquer app que lê os botões do mouse e manda rolagem, cliques e atalhos para outros apps. Sem ela, o LUUZI não consegue funcionar. Você pode desligá-la quando quiser em Ajustes do Sistema › Privacidade e Segurança.</div></details>
+      <details class="qa"><summary data-t="faq.q6">O LUUZI coleta ou envia meus dados?</summary><div class="qa-a" data-t="faq.a6">Não. Seus ajustes e os registros de erros ficam só no seu Mac, em pastas que só o seu usuário acessa. O LUUZI só se conecta à internet para procurar atualizações. O e-mail do cadastro é usado só para falar do LUUZI.</div></details>
+      <details class="qa"><summary data-t="faq.q7">Quais Macs e mouses funcionam?</summary><div class="qa-a" data-t="faq.a7">Qualquer Mac com <b>macOS 14 Sonoma ou mais novo</b> (inclui o Sequoia), com chip Apple Silicon ou Intel. Funciona com mouses com fio, Bluetooth ou receptor USB, e também com o trackpad.</div></details>
+      <details class="qa"><summary data-t="faq.q8">Um botão do meu mouse não aparece ou não funciona</summary><div class="qa-a" data-t="faq.a8">No LUUZI, abra a aba <b>Botões</b>, clique em “Identificar botão” e aperte o botão. Se o app do fabricante do mouse (como o de Logitech ou Razer) já usa esse botão, desligue a ação dele lá para o LUUZI poder assumir.</div></details>
+      <details class="qa"><summary data-t="faq.q9">Como o LUUZI se atualiza?</summary><div class="qa-a" data-t="faq.a9">Sozinho. Você escolhe nos Ajustes do LUUZI entre atualizar manualmente, só ser avisado ou instalar automaticamente. Toda atualização é conferida pela assinatura digital antes de ser instalada.</div></details>
+      <details class="qa"><summary data-t="faq.q10">É grátis? Posso ter problemas no alpha?</summary><div class="qa-a" data-t="faq.a10">O alpha é grátis, e quem ajudar agora terá uma condição especial no lançamento. Por ser uma versão de teste, pode ter falhas. Se algo travar, o LUUZI guarda um registro em Ajustes › Registro de erros, que ajuda a achar a causa.</div></details>
+      <details class="qa"><summary data-t="faq.q11">Como desinstalar?</summary><div class="qa-a" data-t="faq.a11">Saia pelo ícone do LUUZI na barra de menus (Sair do LUUZI) e arraste o app da pasta Aplicativos para o Lixo. Se quiser, tire também o LUUZI da lista de Acessibilidade nos Ajustes do Sistema.</div></details>
+    </div>
+    <footer>© <span id="yr"></span> LUUZI</footer>
+  </div>
 </section>
 
 </main>
@@ -895,7 +935,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   </div>
 </div>
 
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 <script src="explorar.js?v=3"></script>
 </body>
 </html>
