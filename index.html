@@ -6,7 +6,12 @@
 <title>LUUZI — seu mouse, fluido no Mac</title>
 <meta name="description" content="Rolagem suave, gestos, botões, auto scroll e cursor para qualquer mouse no Mac.">
 <meta name="color-scheme" content="light dark">
+<script>try{var t=localStorage.getItem("luuzi-theme");if(t==="light"||t==="dark"){document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t;}}catch(e){}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 241 234'%3E%3Cpath fill='%23E8562A' d='M61.341 86.673 L0 108.776 L40.728 141.309 L6.209 233.694 L96.358 179.058 L151.988 195.449 L156.706 139.323 L240.4 67.799 L122.932 81.706 L57.616 0Z'/%3E%3C/svg%3E">
+<!-- Inter: a fonte mais parecida com a SF Pro do Mac. Só é baixada fora do Mac (no Mac fica a SF Pro do sistema). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
 /* ============================================================
    EDITE AQUI — cores oficiais do LUUZI (Theme.swift)
@@ -32,11 +37,12 @@
   --star-line:rgba(232,86,42,.35);
 
   --ease:cubic-bezier(.65,0,.35,1);   /* ease in-out de todas as transições */
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",system-ui,sans-serif;
-  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,"JetBrains Mono",monospace;
 }
+/* escuro: pelo sistema (se a pessoa não escolheu) ou pelo botão do topo */
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:not([data-theme="light"]){
     --bg:#141210;
     --text:#F2EFEA;
     --dim:#A8A29C;
@@ -50,6 +56,20 @@
     --star-dot:rgba(255,255,255,.75);
     --star-line:rgba(255,140,100,.35);
   }
+}
+:root[data-theme="dark"]{
+    --bg:#141210;
+    --text:#F2EFEA;
+    --dim:#A8A29C;
+    --line:#3A3532;
+    --surface:rgba(255,255,255,.05);
+    --surface-2:#262321;
+    --well:#1B1917;
+    --soft:rgba(255,255,255,.05);
+    --blob:.34;
+    --shadow:0 40px 120px -40px rgba(0,0,0,.85);
+    --star-dot:rgba(255,255,255,.75);
+    --star-line:rgba(255,140,100,.35);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;background:var(--bg)}
@@ -69,6 +89,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:22px clamp(16px,4vw,48px)}
 .top .mark{height:22px;width:auto}
 .top .right{display:flex;align-items:center;gap:10px}
+/* ícone da seção (o mesmo do menu do app) antes do título */
+h2:has(.h-ico){display:flex;align-items:center;gap:.26em}
+.h-ico{display:grid;place-items:center;flex:none;width:.86em;height:.86em;border-radius:.24em;
+  background:color-mix(in srgb,var(--accent) 13%,var(--surface-2));box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent),0 10px 30px -10px var(--accent)}
+.h-ico svg{width:56%;height:56%;fill:none;stroke:var(--accent);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.theme{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--text);backdrop-filter:blur(12px);transition:transform .5s var(--ease),background .4s}
+.theme:hover{transform:rotate(-18deg)}
+.theme svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .lang{display:flex;padding:3px;border-radius:999px;background:var(--surface);border:1px solid var(--line);backdrop-filter:blur(12px)}
 .lang button{font:600 11px var(--mono);padding:6px 9px;border-radius:999px;color:var(--dim);transition:all .4s var(--ease)}
 .lang button.on{background:var(--text);color:var(--bg)}
@@ -128,7 +156,8 @@ section.in .r{opacity:1;transform:none;filter:none}
 .lz{--lz-bg:#F6F4F1;--lz-card:#fff;--lz-line:#E7E3DD;--lz-text:#24211F;--lz-dim:#6B6560;--lz-well:#FBFAF8;--lz-track:#E4DFD8;
   position:relative;width:640px;height:440px;border-radius:14px;background:var(--lz-bg);color:var(--lz-text);font:12px/1.35 var(--font);overflow:hidden;
   box-shadow:0 30px 80px -30px rgba(0,0,0,.45),0 0 0 1px var(--lz-line);text-align:left;letter-spacing:0}
-@media (prefers-color-scheme:dark){.lz{--lz-bg:#1B1917;--lz-card:#262321;--lz-line:#3A3532;--lz-text:#F2EFEA;--lz-dim:#A8A29C;--lz-well:#211F1D;--lz-track:#3A3532}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lz{--lz-bg:#1B1917;--lz-card:#262321;--lz-line:#3A3532;--lz-text:#F2EFEA;--lz-dim:#A8A29C;--lz-well:#211F1D;--lz-track:#3A3532}}
+:root[data-theme="dark"] .lz{--lz-bg:#1B1917;--lz-card:#262321;--lz-line:#3A3532;--lz-text:#F2EFEA;--lz-dim:#A8A29C;--lz-well:#211F1D;--lz-track:#3A3532}
 .lz-lights{position:absolute;top:13px;left:14px;display:flex;gap:6px}
 .lz-lights i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.lz-lights i+i{background:#febc2e}.lz-lights i+i+i{background:#28c840}
 .lz-side{position:absolute;left:0;top:0;bottom:0;width:168px;padding:42px 10px 10px}
@@ -356,6 +385,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
     <svg class="mark" viewBox="0 0 426 108"><use href="#letters" fill="var(--text)"/><use href="#star" fill="var(--accent)" transform="translate(314.336 0) scale(.4613 .4613)"/></svg>
   </a>
   <div class="right">
+    <button class="theme" id="themeBtn" type="button"></button>
     <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="pt">PT</button><button data-lang="en">EN</button></div>
     <a class="btn sm" href="#baixar" data-t="top.cta">Baixar grátis</a>
   </div>
@@ -881,7 +911,7 @@ const GESTURES = {
   const thumbs=$$("#gmap canvas");
   const drawThumbs=()=>thumbs.forEach(c=>{ const x=c.getContext("2d"); x.clearRect(0,0,c.width,c.height);
     drawTrail(x, GESTURES[c.dataset.dir].map(([a,b])=>[a*c.width,b*c.height]), {width:8,color:cssVar("--text"),glow:0}); });
-  drawThumbs(); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawThumbs);
+  drawThumbs(); addEventListener("themechange",drawThumbs);
 
   const stage=$("#gStage"), cv=$("#trail"), ctx=cv.getContext("2d"), cur=$("#gCursor"), pill=$("#pill"), spaces=$("#spaces"), items=$$("#gmap div");
   let space=1; spaces.style.transform=`translateX(-${space*100}%)`;
@@ -1051,6 +1081,31 @@ const downloadUrl=()=>DOWNLOADS[ARCH||"arm"];
     startDownload();
   });
 })();
+
+/* ---------- ícone do app antes do título de cada seção ---------- */
+const H_ICONS = { rolagem:"rolagem", botoes:"botoes", gestos:"gestos", autoscroll:"autoscroll", cursor:"cursor" };
+const addTitleIcons = () => Object.entries(H_ICONS).forEach(([sec,key]) => {
+  const h=$(`#${sec} h2`); if(h && !h.querySelector(".h-ico")) h.insertAdjacentHTML("afterbegin", `<span class="h-ico" aria-hidden="true">${ICONS[key]}</span>`); });
+langListeners.unshift(addTitleIcons);
+
+/* ---------- tema claro / escuro ---------- */
+const mqDark = matchMedia("(prefers-color-scheme: dark)");
+let THEME = (()=>{ try{ const t=localStorage.getItem("luuzi-theme"); return t==="light"||t==="dark" ? t : null; }catch(_){ return null; } })();
+const isDark = () => THEME ? THEME==="dark" : mqDark.matches;
+const SUN = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>';
+const MOON = '<svg viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.8 6.8 0 0 0 10.7 10.7z"/></svg>';
+function applyTheme(){
+  const r=document.documentElement, b=$("#themeBtn");
+  if(THEME) r.dataset.theme=THEME; else delete r.dataset.theme;
+  r.style.colorScheme = isDark() ? "dark" : "light";
+  b.innerHTML = isDark() ? SUN : MOON;
+  const lbl = L(isDark() ? ["Usar tema claro","Use light theme"] : ["Usar tema escuro","Use dark theme"]);
+  b.setAttribute("aria-label", lbl); b.title = lbl;
+  dispatchEvent(new Event("themechange"));
+}
+$("#themeBtn").addEventListener("click", () => { THEME = isDark() ? "light" : "dark"; try{ localStorage.setItem("luuzi-theme",THEME); }catch(_){} applyTheme(); });
+mqDark.addEventListener("change", applyTheme);
+langListeners.push(applyTheme);
 
 applyLang();
 </script>
