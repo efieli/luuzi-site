@@ -406,7 +406,7 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <div class="wrap flip">
     <div class="copy">
       <h2 class="r" style="--i:0" data-t="auto.h">Auto Scroll</h2>
-      <p class="lead r" style="--i:1" data-t="auto.p">Clique e afaste o mouse: a página corre sozinha, mais rápido quanto mais longe. O ícone estica junto, como um elástico.</p>
+      <p class="lead r" style="--i:1" data-t="auto.p">Clique e afaste o mouse: a página corre sozinha, mais rápido quanto mais longe. Sem girar a roda.</p>
       <div class="chips r" style="--i:2" data-t="auto.chips"><span class="chip"><b>Auto Scroll</b></span><span class="chip"><b>Arrastar</b> o conteúdo</span></div>
     </div>
     <div class="stage r" style="--i:1" id="aStage" data-cfg="autoscroll">
@@ -556,7 +556,7 @@ const TEXT = {
     "ges.h":"Gestures", "ges.p":"Hold a button and draw with the mouse. Switching Spaces, opening Mission Control or showing the desktop is one gesture away.",
     "ges.left":"Space to the right", "ges.right":"Space to the left", "ges.up":"Mission Control", "ges.down":"Show Desktop",
     "ges.d1":"Desktop 1", "ges.d2":"Desktop 2", "ges.d3":"Desktop 3",
-    "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go. The icon stretches along, like a rubber band.",
+    "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go. No wheel spinning.",
     "auto.chips":'<span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Drag</b> the content</span>', "auto.bar":"article.html",
     "cur.h":"Pointer", "cur.p":"Faster on the big monitor, precise in Figma. Every mouse at the right speed. Try it here.", "cur.speed":"Speed", "cur.bar":"move your mouse here",
     "inf.h":'One star.<br><span class="grad">Endless possibilities.</span>',
@@ -827,7 +827,6 @@ const GESTURES = {
     svg.classList.toggle("show",show);
     const d=Math.hypot(ox,oy), pull=curve(d/RANGE*1.6), a=AMOUNT*pull, ang=Math.atan2(oy,ox)*180/Math.PI, ux=d?ox/d:0, uy=d?oy/d:0;
     svg.style.transform=`translate(${ax}px,${ay}px)`;
-    disc.setAttribute("transform",`translate(${ux*a*S0*.5} ${uy*a*S0*.5}) rotate(${ang}) scale(${1+a} ${1-a*.35}) rotate(${-ang})`);
     const k=FOLLOW*pull*.18*S0*1.4; dot.setAttribute("cx",ux*k); dot.setAttribute("cy",uy*k);
     const acc=cssVar("--accent-2");
     arrows.forEach((p,i)=>{ const on=(i===2&&oy>8)||(i===0&&oy<-8)||(i===1&&ox>14)||(i===3&&ox<-14);
