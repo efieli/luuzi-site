@@ -183,7 +183,7 @@ const io = new IntersectionObserver(es => es.forEach(e => {
     navLinks.forEach((a,k) => a.classList.toggle("on", k===i));
     (AURA[i]||AURA[0]).forEach(([x,y],k) => blobs[k].style.transform = `translate(${x}vmax,${y}vmax)`);
   } else { active.delete(s.id); }
-}), { threshold:.4 });
+}), { rootMargin:"-35% 0px -35% 0px", threshold:0 });
 sections.forEach(s => io.observe(s));
 const isOn = id => active.has(id);
 
@@ -250,16 +250,24 @@ function lzShow(win,id,on){ win.classList.toggle("lz-off",!on); win.querySelecto
 /* centro de um elemento em coordenadas da janela desenhada (640 × 440) */
 function lzPos(el,root){ let x=el.offsetWidth/2, y=el.offsetHeight/2; while(el && el!==root){ x+=el.offsetLeft; y+=el.offsetTop; el=el.offsetParent; } return [x,y]; }
 
-/* ---------- "Configure no LUUZI" → "Na prática", em cada palco ---------- */
+/* ---------- "Configure no LUUZI" → "Na prática", em cada palco ----------
+   Começa do início quando o quadro aparece na tela e para quando sai.
+   O seletor embaixo do quadro deixa a pessoa escolher o que ver. */
+const STOP = Symbol("stop");
 (function(){
   $$(".stage[data-cfg]").forEach(stage => {
-    const id=stage.dataset.cfg, c=CFG[id], section=stage.closest("section").id;
+    const id=stage.dataset.cfg, c=CFG[id];
     const box=document.createElement("div"); box.className="cfg"; box.innerHTML=`<div class="cam"></div>`;
-    const step=document.createElement("div"); step.className="step"; step.innerHTML="<span></span><span></span>";
-    stage.append(box, step);
+    const step=document.createElement("div"); step.className="step"; step.setAttribute("role","group");
+    step.innerHTML='<button type="button"></button><button type="button"></button>';
+    // o seletor fica embaixo do quadro: os dois vão dentro de um bloco que faz a entrada na tela
+    const holder=document.createElement("div"); holder.className="stage-wrap r"; holder.style.cssText=stage.style.cssText;
+    stage.classList.remove("r"); stage.removeAttribute("style"); stage.replaceWith(holder); holder.append(stage, step); stage.append(box);
     const cam=box.querySelector(".cam"), [s1,s2]=step.children;
-    const setLang=()=>{ s1.textContent=L(S.step1); s2.textContent=L(S.step2); }; setLang(); langListeners.push(setLang);
-    let win, base=1;
+    const setLang=()=>{ s1.textContent=L(S.step1); s2.textContent=L(S.step2); step.setAttribute("aria-label",L(["Ver","Show"])); }; setLang(); langListeners.push(setLang);
+    const mark=n=>{ [s1,s2].forEach((b,i)=>{ b.classList.toggle("on",i===n); b.setAttribute("aria-pressed",i===n); }); };
+    let win, base=1, tok=0, manual=false;
+    const wait=async(ms,t)=>{ await sleep(ms); if(t!==tok) throw STOP; };
     // câmera: z = aproximação; [px,py] = ponto da janela que fica no centro do palco
     const camTo=(z,p,instant)=>{ const W=stage.clientWidth, H=stage.clientHeight; base=Math.min(W/640,H/440)*.9;
       const k=base*z, [px,py]=p||[320,220];
@@ -269,36 +277,50 @@ function lzPos(el,root){ let x=el.offsetWidth/2, y=el.offsetHeight/2; while(el &
     const q=k=>win.querySelector(`[data-k="${k}"]`);
     const cur=()=>win.querySelector(".lz-cur");
     const curTo=(p,instant)=>{ const c=cur(); c.style.transition=instant?"none":""; c.style.left=(p[0]-3)+"px"; c.style.top=(p[1]-2)+"px"; };
-    const click=async p=>{ const r=win.querySelector(".lz-rip"); r.style.left=p[0]+"px"; r.style.top=p[1]+"px"; r.classList.remove("go"); void r.offsetWidth; r.classList.add("go");
-      cur().style.transform="scale(.82)"; await sleep(160); cur().style.transform=""; };
-    async function goClick(el,z){ const p=lzPos(el,win); camTo(z,p); curTo(p); await sleep(1050); await click(p); return p; }
-    async function run(){
-      while(true){
-        while(!isOn(section)) await sleep(300);
-        // 1 · configurar: abre a seção, liga, escolhe
-        win=lzWindow(c.from,true); cam.innerHTML=""; cam.appendChild(win);
-        camTo(1,null,true); curTo([560,400],true);
-        stage.classList.add("cfg-on"); s1.classList.add("on"); s2.classList.remove("on");
-        await sleep(800);
-        await goClick(win.querySelector(`.lz-item[data-s="${id}"]`),1.9);
-        lzShow(win,id,false); await sleep(650);
-        await goClick(q("tog"),2.3);
-        q("tog").classList.add("on"); win.classList.remove("lz-off"); await sleep(750);
-        const ctl=q(c.ctl);
-        const p=await goClick(ctl,2);
-        if(c.drag){ const [a,b]=c.drag, sl=q("sl"), f=sl.querySelector(".f"), t0=performance.now();
-          await new Promise(res=>{ const g=n=>{ const e=easeInOut(Math.min(1,(n-t0)/1100)), x=a+(b-a)*e;
-            ctl.style.left=f.style.width=(x*100)+"%"; curTo(lzPos(ctl,win),true); e<1?requestAnimationFrame(g):res(); }; requestAnimationFrame(g); });
-        } else { ctl.parentElement.querySelectorAll(".on").forEach(e=>e.classList.remove("on")); ctl.classList.add("on"); }
-        if(c.then){ await sleep(500); const t=q(c.then); await goClick(t,2.3); t.classList.toggle("on"); }   // ex.: desliga a aceleração
-        await sleep(900);
-        camTo(1); await sleep(1100);
-        // 2 · na prática
-        stage.classList.remove("cfg-on"); s1.classList.remove("on"); s2.classList.add("on");
-        await sleep(id==="gestos"?10000:6500);
-      }
+    const click=async(p,t)=>{ const r=win.querySelector(".lz-rip"); r.style.left=p[0]+"px"; r.style.top=p[1]+"px"; r.classList.remove("go"); void r.offsetWidth; r.classList.add("go");
+      cur().style.transform="scale(.82)"; await wait(160,t); cur().style.transform=""; };
+    async function goClick(el,z,t){ const p=lzPos(el,win); camTo(z,p); curTo(p); await wait(1050,t); await click(p,t); return p; }
+    // 1 · configurar: abre a seção, liga, escolhe
+    async function configure(t){
+      win=lzWindow(c.from,true); cam.innerHTML=""; cam.appendChild(win);
+      camTo(1,null,true); curTo([560,400],true);
+      stage.classList.add("cfg-on"); mark(0);
+      await wait(800,t);
+      await goClick(win.querySelector(`.lz-item[data-s="${id}"]`),1.9,t);
+      lzShow(win,id,false); await wait(650,t);
+      await goClick(q("tog"),2.3,t);
+      q("tog").classList.add("on"); win.classList.remove("lz-off"); await wait(750,t);
+      const ctl=q(c.ctl);
+      await goClick(ctl,2,t);
+      if(c.drag){ const [a,b]=c.drag, sl=q("sl"), f=sl.querySelector(".f"), t0=performance.now();
+        await new Promise(res=>{ const g=n=>{ const e=easeInOut(Math.min(1,(n-t0)/1100)), x=a+(b-a)*e;
+          ctl.style.left=f.style.width=(x*100)+"%"; curTo(lzPos(ctl,win),true); e<1&&t===tok?requestAnimationFrame(g):res(); }; requestAnimationFrame(g); });
+        if(t!==tok) throw STOP;
+      } else { ctl.parentElement.querySelectorAll(".on").forEach(e=>e.classList.remove("on")); ctl.classList.add("on"); }
+      if(c.then){ await wait(500,t); const x=q(c.then); await goClick(x,2.3,t); x.classList.toggle("on"); }   // ex.: desliga a aceleração
+      await wait(900,t);
+      camTo(1); await wait(1100,t);
     }
-    run();
+    // 2 · na prática (os gestos têm a própria sequência; os outros mostram por alguns segundos)
+    async function practice(t){
+      stage.classList.remove("cfg-on"); mark(1);
+      if(stage.practice) await stage.practice(()=>t===tok); else await wait(6500,t);
+      if(t!==tok) throw STOP;
+    }
+    async function play(from){
+      const t=++tok;
+      try{
+        if(from==="cfg") await configure(t);
+        while(true){ await practice(t); if(!manual) await configure(t); }   // escolha da pessoa: fica no que ela pediu
+      }catch(e){ if(e!==STOP) throw e; }
+    }
+    s1.addEventListener("click",()=>{ manual=true; play("cfg"); });
+    s2.addEventListener("click",()=>{ manual=true; play("practice"); });
+    mark(1);
+    new IntersectionObserver(es=>es.forEach(e=>{
+      if(e.isIntersecting){ manual=false; play("cfg"); }    // apareceu: começa do início
+      else tok++;                                           // saiu da tela: para
+    }),{ threshold:.55 }).observe(stage);
   });
 })();
 
@@ -347,16 +369,17 @@ const GESTURES = {
   const stage=$("#gStage"), cv=$("#trail"), ctx=cv.getContext("2d"), cur=$("#gCursor"), pill=$("#pill"), spaces=$("#spaces"), items=$$("#gmap div");
   let space=1; spaces.style.transform=`translateX(-${space*100}%)`;
   const size=()=>{ const r=stage.getBoundingClientRect(); cv.width=r.width*dpr(); cv.height=r.height*dpr(); return r; };
-  const anim=(dur,fn)=>new Promise(res=>{ const t0=performance.now(); const f=n=>{ const p=Math.min(1,(n-t0)/dur); fn(p); p<1?requestAnimationFrame(f):res(); }; requestAnimationFrame(f); });
-  const waitOn=async()=>{ while(!isOn("gestos") || stage.classList.contains("cfg-on")) await sleep(300); };
+  const anim=(dur,fn)=>new Promise((res,rej)=>{ const t0=performance.now(); const f=n=>{ if(!alive()) return rej(STOP); const p=Math.min(1,(n-t0)/dur); fn(p); p<1?requestAnimationFrame(f):res(); }; requestAnimationFrame(f); });
   const place=(x,y)=>cur.style.transform=`translate(${x-3}px,${y-2}px)`;
+  let alive=()=>true;
+  const nap=async ms=>{ await sleep(ms); if(!alive()) throw STOP; };
   async function gesture(dir){
     const r=size(), k=dpr(), dx=dir==="left"?-1:dir==="right"?1:0;
     const pts=GESTURES[dir].map(([a,b])=>[a*r.width,b*r.height]);
     items.forEach(d=>d.classList.toggle("on",d.dataset.g===dir));
     const [sx,sy]=pts[0];
     await anim(650,p=>{ const e=easeInOut(p); place(r.width/2+(sx-r.width/2)*e, r.height*.75+(sy-r.height*.75)*e); });
-    await sleep(250);
+    await nap(250);
     const path=densify(pts), drawn=[];
     await anim(700,p=>{ const e=1-Math.pow(1-p,2), n=Math.max(2,Math.round(e*path.length)); drawn.length=0; drawn.push(...path.slice(0,n));
       const [x,y]=drawn[drawn.length-1]; place(x,y);
@@ -369,12 +392,16 @@ const GESTURES = {
     if(dir==="down") stage.classList.add("desk-on");    // Mostrar mesa: as janelas saem para os lados
     await anim(550,p=>{ ctx.clearRect(0,0,r.width,r.height); drawTrail(ctx,drawn,{erased:easeInOut(p)}); });   // sai apagando
     ctx.clearRect(0,0,r.width,r.height);
-    await sleep(700); pill.classList.remove("show");
-    if(dir==="up"||dir==="down"){ await sleep(1100); stage.classList.remove("mc-on","desk-on"); await sleep(900); }
-    await sleep(450);
+    await nap(700); pill.classList.remove("show");
+    if(dir==="up"||dir==="down"){ await nap(1100); stage.classList.remove("mc-on","desk-on"); await nap(900); }
+    await nap(450);
   }
-  (async function loop(){ const seq=["left","up","right","down","right","left"];
-    for(let i=0;;i++){ await waitOn(); await gesture(seq[i%seq.length]); } })();
+  // na prática: os quatro gestos inteiros e depois volta para o app (nenhum desenho fica pela metade)
+  const clean=()=>{ const r=stage.getBoundingClientRect(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height);
+    pill.classList.remove("show"); stage.classList.remove("mc-on","desk-on"); items.forEach(d=>d.classList.remove("on"));
+    space=1; spaces.style.transform=`translateX(-${space*100}%)`; place(r.width/2,r.height*.75); };
+  stage.practice=async ok=>{ alive=ok; try{ for(const d of ["left","up","right","down"]) await gesture(d); }
+    catch(e){ if(e!==STOP) throw e; clean(); } };
 })();
 
 /* ---------- 5. auto scroll: ícone Clássico com o elástico do app ---------- */
@@ -478,13 +505,15 @@ const GESTURES = {
   const c=$("#const"), ctx=c.getContext("2d"); let mx=-1, my=-1, t0=performance.now();
   c.addEventListener("pointermove",e=>{ const r=c.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top; });
   c.addEventListener("pointerleave",()=>{ mx=my=-1; });
+  let col; const readCol=()=>{ col={acc:cssVar("--accent"),text:cssVar("--text"),dim:cssVar("--dim"),line:cssVar("--star-line"),font:getComputedStyle(document.body).fontFamily}; };
+  readCol(); addEventListener("themechange",readCol);
   const starPath=new Path2D("M61.341 86.673 L0 108.776 L40.728 141.309 L6.209 233.694 L96.358 179.058 L151.988 195.449 L156.706 139.323 L240.4 67.799 L122.932 81.706 L57.616 0Z");
   (function tick(now){
     requestAnimationFrame(tick);
     if(!isOn("infinito")) { t0=now; return; }
     const r=c.getBoundingClientRect(), k=dpr(); if(c.width!==Math.round(r.width*k)){ c.width=Math.round(r.width*k); c.height=Math.round(r.height*k); }
     ctx.setTransform(k,0,0,k,0,0); ctx.clearRect(0,0,r.width,r.height);
-    const acc=cssVar("--accent"), text=cssVar("--text"), dim=cssVar("--dim"), line=cssVar("--star-line"), font=getComputedStyle(document.body).fontFamily;
+    const {acc,text,dim,line,font}=col;
     const P=STARS.map(([n,x,y],i)=>[x*r.width + Math.sin(now/2400+i)*4, y*r.height + Math.cos(now/2000+i*1.7)*4]);
     const T=(now-t0)/1000;
     LINKS.forEach(([a,b],i)=>{ const p=Math.min(1,Math.max(0,(T-i*.12)/.6)); if(!p) return;
@@ -495,8 +524,21 @@ const GESTURES = {
       ctx.beginPath(); ctx.arc(x,y,rad*.55,0,7); ctx.fill(); ctx.restore();
       ctx.font=`${near?600:500} ${near?14:12.5}px ${font}`; ctx.textAlign="center"; ctx.fillStyle=near?text:dim;
       ctx.globalAlpha=Math.min(1,Math.max(0,(T-.3-i*.08)/.5)); ctx.fillText(L(name),x,y-14); ctx.globalAlpha=1; });
-    const cx=r.width*.5, cy=r.height*.44, s=Math.min(r.width,r.height)*.12*(1+.04*Math.sin(now/900));
-    ctx.save(); ctx.translate(cx-s/2,cy-s/2); ctx.scale(s/240,s/234); ctx.shadowColor=acc; ctx.shadowBlur=40; ctx.fillStyle=acc; ctx.fill(starPath); ctx.restore();
+    // raios: depois das ligações entre os pontos, cada ponto se liga à estrela, e uma luz corre do ponto até ela
+    const cx=r.width*.5, cy=r.height*.44, R0=Math.min(r.width,r.height)*.075, T2=T-LINKS.length*.12-.5;
+    let hits=0;
+    P.forEach(([x,y],i)=>{ const p=Math.min(1,Math.max(0,(T2-i*.07)/.7)); if(!p) return;
+      const e=easeInOut(p), dx=cx-x, dy=cy-y, len=Math.hypot(dx,dy), ux=dx/len, uy=dy/len, L2=Math.max(0,len-R0);
+      const gx=x+ux*L2*e, gy=y+uy*L2*e, gr=ctx.createLinearGradient(x,y,cx,cy);
+      gr.addColorStop(0,"rgba(232,86,42,.06)"); gr.addColorStop(1,"rgba(232,86,42,.5)");
+      ctx.strokeStyle=gr; ctx.lineWidth=1; ctx.setLineDash([2,5]); ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(gx,gy); ctx.stroke(); ctx.setLineDash([]);
+      if(p<1) return;
+      const f=((now/1000)*.45+i*.137)%1, fx=x+ux*L2*f, fy=y+uy*L2*f;            // a luz vai até a estrela
+      if(f>.9) hits++;
+      ctx.save(); ctx.globalAlpha=Math.sin(f*Math.PI)*.9; ctx.shadowColor=acc; ctx.shadowBlur=10; ctx.fillStyle=acc;
+      ctx.beginPath(); ctx.arc(fx,fy,1.8,0,7); ctx.fill(); ctx.restore(); });
+    const s=Math.min(r.width,r.height)*.12*(1+.04*Math.sin(now/900)+.025*Math.min(hits,3));
+    ctx.save(); ctx.translate(cx-s/2,cy-s/2); ctx.scale(s/240,s/234); ctx.shadowColor=acc; ctx.shadowBlur=40+hits*8; ctx.fillStyle=acc; ctx.fill(starPath); ctx.restore();
   })(0);
 })();
 
