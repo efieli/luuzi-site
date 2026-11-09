@@ -173,6 +173,8 @@ section.in .r{opacity:1;transform:none;filter:none}
 .lz-tog::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .35s var(--ease)}
 .lz-tog.on{background:var(--accent)}
 .lz-tog.on::after{transform:translateX(16px)}
+.lz-row .lz-tog{margin-left:auto}
+.lz-row .lbl{font-weight:600}
 .lz-sub{color:var(--lz-dim);margin:5px 0 20px;font-size:12.5px}
 .lz-card{background:var(--lz-card);border:1px solid var(--lz-line);border-radius:14px;padding:16px;transition:opacity .45s var(--ease),filter .45s var(--ease)}
 .lz-off .lz-card{opacity:.4;filter:grayscale(1)}
@@ -296,6 +298,35 @@ section.in .r{opacity:1;transform:none;filter:none}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent) var(--p,40%),var(--line) var(--p,40%));outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent),0 4px 12px rgba(0,0,0,.3);cursor:grab}
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
+
+/* cursor: um mouse de cada vez, cada um com a sua velocidade, e a aceleração */
+.devs{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+.devs button{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--dim);transition:all .45s var(--ease)}
+.devs button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.devs button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.slider{margin-top:20px}
+.acc{display:flex;align-items:center;justify-content:space-between;max-width:380px;margin-top:18px;font-size:13px;color:var(--dim)}
+.tg{width:42px;height:24px;border-radius:12px;background:var(--line);position:relative;transition:background .35s var(--ease);flex:none}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .35s var(--ease)}
+.tg.on{background:var(--accent)}
+.tg.on::after{transform:translateX(18px)}
+.pad .dev{position:absolute;right:14px;top:12px;font:600 11px var(--mono);color:var(--dim);padding:5px 9px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line);transition:all .4s var(--ease)}
+
+/* ---------- por app, por mouse, por tela ---------- */
+.ctx{position:absolute;inset:38px 0 0 0;padding:22px;background:var(--well);display:flex;flex-direction:column;gap:16px}
+.ctxbar{display:flex;gap:8px;flex-wrap:wrap}
+.ctxp{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--text);transition:all .45s var(--ease)}
+.ctxp svg{width:15px;height:15px;fill:none;stroke:var(--dim);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ctxp i{font-style:normal;color:var(--dim);font-size:10px;margin-left:2px}
+.ctxp.hl{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.ctxp.hl svg{stroke:var(--accent)}
+.res{display:flex;flex-direction:column;gap:8px}
+.rrow{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:13.5px}
+.rrow svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rrow .tag{font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:3px 6px;border-radius:5px;border:1px solid var(--line);white-space:nowrap}
+.rrow b{margin-left:auto;font-weight:700;display:inline-block;text-align:right}
+.rrow.flash b{animation:flash .8s var(--ease)}
+@keyframes flash{from{color:var(--accent);opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ---------- 7. infinitas possibilidades ---------- */
 #infinito .wrap{grid-template-columns:1fr;text-align:center;justify-items:center;gap:0}
@@ -513,11 +544,15 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
   <div class="wrap">
     <div class="copy">
       <h2 class="r" style="--i:0" data-t="cur.h">Cursor</h2>
-      <p class="lead r" style="--i:1" data-t="cur.p">Mais rápido no monitor grande, preciso no Figma.<br>Cada mouse na velocidade certa, teste ao lado.</p>
-      <div class="slider r" style="--i:2">
+      <p class="lead r" style="--i:1" data-t="cur.p">Cada mouse com a sua velocidade.<br>E, se preferir, desligue a aceleração: o ponteiro anda sempre na mesma medida da mão.</p>
+      <div class="devs r" style="--i:2" id="devs">
+        <button data-dev="mx"><svg viewBox="0 0 16 16"><rect x="4" y="1.5" width="8" height="13" rx="4"/><path d="M8 4.2v2.6"/></svg>MX Master</button><button data-dev="magic"><svg viewBox="0 0 16 16"><rect x="4" y="1.5" width="8" height="13" rx="4"/><path d="M8 4.2v2.6"/></svg>Magic Mouse</button><button data-dev="g203"><svg viewBox="0 0 16 16"><rect x="4" y="1.5" width="8" height="13" rx="4"/><path d="M8 4.2v2.6"/></svg>G203</button>
+      </div>
+      <div class="slider r" style="--i:3">
         <label for="spd"><span data-t="cur.speed">Velocidade</span> <b id="spdOut">1.6×</b></label>
         <input id="spd" type="range" min="0.5" max="3" step="0.1" value="1.6">
       </div>
+      <div class="acc r" style="--i:4"><span data-t="cur.acc">Aceleração</span><button class="tg on" id="acc" type="button" role="switch" aria-checked="true" aria-label="Aceleração"></button></div>
     </div>
     <div class="stage r" style="--i:1" data-cfg="cursor">
       <div class="win-bar"><i></i><i></i><i></i><em data-t="cur.bar">passe o mouse aqui</em></div>
@@ -526,13 +561,29 @@ footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:
         <div class="glow" id="pGlow"></div>
         <svg class="ghost" id="pGhost" viewBox="0 0 22 22"><use href="#pointer"/></svg>
         <svg class="real" id="pReal" viewBox="0 0 22 22"><use href="#pointer"/></svg>
-        <div class="legend"><span><i class="g"></i>macOS</span><span><i></i>LUUZI</span></div>
+        <div class="legend"><span><i class="g"></i><span data-t="cur.hand">sua mão</span></span><span><i></i>LUUZI</span></div>
+        <span class="dev" id="pDev"></span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 7 · INFINITAS POSSIBILIDADES -->
+<!-- 7 · POR APP, POR MOUSE, POR TELA -->
+<section id="cada" data-title="App, mouse e tela" data-title-en="App, mouse, display">
+  <div class="wrap flip">
+    <div class="copy">
+      <h2 class="r" style="--i:0" data-t="cada.h">Cada app, cada mouse, cada tela.</h2>
+      <p class="lead r" style="--i:1" data-t="cada.p">Toda seção do LUUZI pode ter um ajuste próprio por app, por mouse e por tela.<br>Você troca de app, de mouse ou de monitor e o LUUZI troca junto, sozinho.</p>
+      <div class="chips r" style="--i:2" data-t="cada.chips"><span class="chip"><b>Rolagem suave</b></span><span class="chip"><b>Botões</b></span><span class="chip"><b>Gestos</b></span><span class="chip"><b>Auto Scroll</b></span><span class="chip"><b>Cursor</b></span></div>
+    </div>
+    <div class="stage r" style="--i:1" id="cStage">
+      <div class="win-bar"><i></i><i></i><i></i><em>LUUZI</em></div>
+      <div class="ctx"><div class="ctxbar" id="ctxbar"></div><div class="res" id="res"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · INFINITAS POSSIBILIDADES -->
 <section id="infinito" data-title="Possibilidades" data-title-en="Possibilities">
   <div class="wrap">
     <h2 class="r" style="--i:0" data-t="inf.h">Uma estrela.<br><span class="grad">Infinitas possibilidades.</span></h2>
@@ -616,7 +667,7 @@ const CFG = {
   botoes:     { from:"rolagem",  ctl:"row0" },
   gestos:     { from:"botoes",   ctl:"row2" },
   autoscroll: { from:"gestos",   ctl:"opt0" },
-  cursor:     { from:"rolagem",  ctl:"knob", drag:[.30,.80] },
+  cursor:     { from:"rolagem",  ctl:"knob", drag:[.30,.80], then:"acc" },
 };
 
 /* Textos em português (Brasil) e inglês (resto do mundo). As chaves batem com data-t="..." na página. */
@@ -640,7 +691,9 @@ const TEXT = {
     "ges.d1":"Desktop 1", "ges.d2":"Desktop 2", "ges.d3":"Desktop 3",
     "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go.<br>No wheel spinning.",
     "auto.chips":'<span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Drag</b> the content</span>', "auto.bar":"article.html",
-    "cur.h":"Pointer", "cur.p":"Faster on the big monitor, precise in Figma.<br>Every mouse at the right speed, try it here.", "cur.speed":"Speed", "cur.bar":"move your mouse here",
+    "cur.h":"Pointer", "cur.p":"Every mouse with its own speed.<br>And if you like, turn acceleration off: the pointer always moves exactly as much as your hand.", "cur.speed":"Speed", "cur.acc":"Acceleration", "cur.hand":"your hand", "cur.bar":"move your mouse here",
+    "cada.h":"Every app, every mouse, every display.", "cada.p":"Every LUUZI section can have its own settings per app, per mouse and per display.<br>Switch apps, mice or monitors and LUUZI switches along, on its own.",
+    "cada.chips":'<span class="chip"><b>Smooth Scrolling</b></span><span class="chip"><b>Buttons</b></span><span class="chip"><b>Gestures</b></span><span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Pointer</b></span>',
     "inf.h":'One star.<br><span class="grad">Endless possibilities.</span>',
     "inf.p":"Stars form endless constellations.<br>In LUUZI, every setting is a star: combine buttons, gestures and speeds per app, per mouse and per display, and shape your mouse your way.",
     "app.h":"All in one app.", "app.p":"Simple to set up.<br>Click around.",
@@ -667,6 +720,21 @@ const BUTTONS = [ // botão do mouse → ação, por app
   { app:"Figma",  maps:[[3,"4 · VOLTAR|4 · BACK","Desfazer ⌘Z|Undo ⌘Z"],[4,"5 · AVANÇAR|5 · FORWARD","Refazer ⌘⇧Z|Redo ⌘⇧Z"],[2,"3 · MEIO|3 · MIDDLE","Mission Control|Mission Control"]] },
   { app:"Finder", maps:[[3,"4 · VOLTAR|4 · BACK","Espaço à esquerda|Space to the left"],[4,"5 · AVANÇAR|5 · FORWARD","Espaço à direita|Space to the right"],[2,"3 · MEIO|3 · MIDDLE","Abrir Música|Open Music"]] },
 ];
+/* Seção "Cada app, cada mouse, cada tela": o que muda em cada combinação */
+const CTX_APPS = [
+  { n:"Safari",   scroll:"Suave|Smooth",    b4:"Voltar ⌘[|Back ⌘[" },
+  { n:"Figma",    scroll:"Preciso|Precise", b4:"Desfazer ⌘Z|Undo ⌘Z" },
+  { n:"Premiere", scroll:"Linhas|Lines",    b4:"Marcador M|Marker M" },
+];
+const CTX_MICE = [
+  { n:"MX Master",   v:1.4, a:true  },
+  { n:"Magic Mouse", v:1.0, a:false },
+  { n:"G203",        v:2.1, a:false },
+];
+const CTX_SCREENS = [
+  { n:"MacBook",                   k:1   },
+  { n:"Monitor 4K|4K monitor",     k:1.5 },
+];
 /* Estrelas da constelação: cada uma é um ajuste do LUUZI ("pt|en", x, y de 0 a 1) */
 const STARS = [
   ["Rolagem suave|Smooth Scrolling",.10,.30],["Velocidade|Speed",.20,.62],["Inércia|Momentum",.30,.22],["Botões|Buttons",.40,.52],["Por app|Per app",.50,.14],
@@ -678,7 +746,7 @@ const LINKS = [[0,2],[2,4],[4,6],[6,8],[8,9],[0,1],[1,3],[3,5],[5,7],[7,9],[3,4]
 /* Posição dos brilhos do fundo em cada seção (x, y em vmax) */
 const AURA = [
   [[0,0],[0,0],[0,0]],[[-8,30],[-30,-10],[20,-10]],[[10,40],[-20,-20],[50,-20]],[[60,10],[-60,40],[-10,-30]],
-  [[70,-10],[-50,30],[0,-10]],[[20,20],[-10,40],[40,-40]],[[30,10],[-20,10],[10,-20]],[[40,30],[-40,0],[-20,-20]],[[30,15],[-30,10],[20,-25]],
+  [[70,-10],[-50,30],[0,-10]],[[20,20],[-10,40],[40,-40]],[[30,10],[-20,10],[10,-20]],[[50,20],[-30,30],[0,-30]],[[40,30],[-40,0],[-20,-20]],[[30,15],[-30,10],[20,-25]],
 ];
 
 /* ============================================================ */
@@ -795,7 +863,8 @@ function lzBody(id){
     case "rolagem": return `<div class="lz-card"><h5>Preset</h5><div class="lz-grid">${[["Padrão|Standard","M3 31 C 12 6, 30 4, 57 4"],["Suave|Smooth","M3 31 C 26 22, 40 7, 57 5"],["Rápido|Fast","M3 31 C 6 4, 20 3, 57 3"],["Preciso|Precise","M3 31 C 10 14, 22 11, 57 11"]]
       .map(([n,d],i)=>`<div class="lz-opt${i===0?" on":""}" data-k="opt${i}">${curveSvg(d)}<b>${L(n)}</b></div>`).join("")}</div></div>`;
     case "cursor": return `<div class="lz-card"><h5>${L("Velocidade|Speed")}</h5><div class="lz-sl" data-k="sl"><div class="f" style="width:30%"></div><div class="kn" data-k="knob" style="left:30%"></div></div>
-      <div class="lz-lbl"><span>${L("lenta|slow")}</span><span>${L("rápida|fast")}</span></div></div>`;
+      <div class="lz-lbl"><span>${L("lenta|slow")}</span><span>${L("rápida|fast")}</span></div>
+      <div class="lz-row" style="margin:16px 0 0"><span class="lbl">${L("Aceleração|Acceleration")}</span><span class="lz-tog on" data-k="acc"></span></div></div>`;
     case "botoes": return `<div class="lz-card"><h5>${L("Botões do mouse|Mouse buttons")}</h5>${[["4 · VOLTAR|4 · BACK","Voltar ⌘[|Back ⌘["],["5 · AVANÇAR|5 · FORWARD","Avançar ⌘]|Forward ⌘]"],["3 · MEIO|3 · MIDDLE","Fechar aba ⌘W|Close tab ⌘W"]]
       .map(([k,v],i)=>`<div class="lz-row" data-k="row${i}"><span class="k">${L(k)}</span><span class="v">${L(v)}</span></div>`).join("")}</div>`;
     case "gestos": return `<div class="lz-card"><h5>${L("Seus gestos|Your gestures")}</h5>${[
@@ -860,6 +929,7 @@ function lzPos(el,root){ let x=el.offsetWidth/2, y=el.offsetHeight/2; while(el &
           await new Promise(res=>{ const g=n=>{ const e=easeInOut(Math.min(1,(n-t0)/1100)), x=a+(b-a)*e;
             ctl.style.left=f.style.width=(x*100)+"%"; curTo(lzPos(ctl,win),true); e<1?requestAnimationFrame(g):res(); }; requestAnimationFrame(g); });
         } else { ctl.parentElement.querySelectorAll(".on").forEach(e=>e.classList.remove("on")); ctl.classList.add("on"); }
+        if(c.then){ await sleep(500); const t=q(c.then); await goClick(t,2.3); t.classList.toggle("on"); }   // ex.: desliga a aceleração
         await sleep(900);
         camTo(1); await sleep(1100);
         // 2 · na prática
@@ -977,24 +1047,69 @@ const GESTURES = {
   })(last);
 })();
 
-/* ---------- 6. cursor: segue o mouse com a velocidade escolhida ---------- */
+/* ---------- 6. cursor: cada mouse com a sua velocidade, aceleração liga e desliga ---------- */
 (function(){
-  const pad=$("#pad"), real=$("#pReal"), ghost=$("#pGhost"), glow=$("#pGlow"), spd=$("#spd"), out=$("#spdOut");
-  let f=+spd.value, tx=0, ty=0, rx=0, ry=0, hover=false;
-  const setF=()=>{ f=+spd.value; out.textContent=f.toFixed(1)+"×"; spd.style.setProperty("--p",((f-.5)/2.5*100)+"%"); }; setF();
-  spd.addEventListener("input",setF);
+  const pad=$("#pad"), real=$("#pReal"), ghost=$("#pGhost"), glow=$("#pGlow"), spd=$("#spd"), out=$("#spdOut"), acc=$("#acc"), badge=$("#pDev");
+  const DEV = { mx:{n:"MX Master",v:1.6,a:true}, magic:{n:"Magic Mouse",v:1.0,a:false}, g203:{n:"G203",v:2.3,a:false} };
+  let cur="mx", tx=0, ty=0, ptx=null, pty=null, rx=null, ry=null, vh=0, hover=false;
+  const show=()=>{ const d=DEV[cur];
+    spd.value=d.v; out.textContent=d.v.toFixed(1)+"×"; spd.style.setProperty("--p",((d.v-.5)/2.5*100)+"%");
+    acc.classList.toggle("on",d.a); acc.setAttribute("aria-checked",d.a); acc.setAttribute("aria-label",L(["Aceleração","Acceleration"]));
+    $$("#devs button").forEach(b=>b.classList.toggle("on",b.dataset.dev===cur));
+    badge.textContent=`${d.n} · ${d.v.toFixed(1)}× · ${L(d.a?["com aceleração","acceleration on"]:["sem aceleração","no acceleration"])}`; };
+  $$("#devs button").forEach(b=>b.addEventListener("click",()=>{ cur=b.dataset.dev; show(); }));
+  spd.addEventListener("input",()=>{ DEV[cur].v=+spd.value; show(); });
+  acc.addEventListener("click",()=>{ DEV[cur].a=!DEV[cur].a; show(); });
+  show(); langListeners.push(show);
   pad.addEventListener("pointermove",e=>{ const r=pad.getBoundingClientRect(); hover=true; tx=e.clientX-r.left; ty=e.clientY-r.top; });
-  pad.addEventListener("pointerleave",()=>hover=false);
+  pad.addEventListener("pointerleave",()=>{ hover=false; });
   (function tick(now){
     requestAnimationFrame(tick);
     if(!isOn("cursor")) return;
-    const w=pad.clientWidth, h=pad.clientHeight, cx=w/2, cy=h/2;
-    if(!hover){ const t=now/1000; tx=cx+Math.sin(t*.9)*w*.18; ty=cy+Math.sin(t*1.3)*h*.15; }
-    const ex=Math.max(10,Math.min(w-20,cx+(tx-cx)*f)), ey=Math.max(10,Math.min(h-20,cy+(ty-cy)*f));
-    rx+=(ex-rx)*.22; ry+=(ey-ry)*.22;
+    const w=pad.clientWidth, h=pad.clientHeight, cx=w/2, cy=h/2, d=DEV[cur];
+    if(!hover){ const t=now/1000; tx=cx+Math.sin(t*.9)*w*.18+Math.sin(t*2.7)*w*.04; ty=cy+Math.sin(t*1.3)*h*.15; }
+    if(rx===null){ rx=cx; ry=cy; }
+    if(ptx!==null){
+      const dx=tx-ptx, dy=ty-pty; vh += (Math.hypot(dx,dy)-vh)*.25;              // rapidez da mão
+      const gain = d.v * (d.a ? Math.min(2.2, .45 + vh/7) : 1);                 // com aceleração: rápido vai mais longe
+      rx += dx*gain; ry += dy*gain;
+      rx += (cx+(tx-cx)*d.v - rx)*.03; ry += (cy+(ty-cy)*d.v - ry)*.03;          // não deixa sair do quadro aos poucos
+      rx=Math.max(10,Math.min(w-20,rx)); ry=Math.max(10,Math.min(h-20,ry));
+    }
+    ptx=tx; pty=ty;
     ghost.style.transform=`translate(${tx}px,${ty}px)`;
     real.style.transform=glow.style.transform=`translate(${rx}px,${ry}px)`;
   })(0);
+})();
+
+/* ---------- 7. cada app, cada mouse, cada tela ---------- */
+(function(){
+  const bar=$("#ctxbar"), res=$("#res");
+  const IC = {
+    app:'<svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1.3"/><rect x="9" y="2" width="5" height="5" rx="1.3"/><rect x="2" y="9" width="5" height="5" rx="1.3"/><rect x="9" y="9" width="5" height="5" rx="1.3"/></svg>',
+    mouse:ICONS.rolagem,
+    screen:'<svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="8.5" rx="1.5"/><path d="M6 14h4M8 11v3"/></svg>',
+  };
+  const KINDS = [["app",CTX_APPS],["mouse",CTX_MICE],["screen",CTX_SCREENS]];
+  const sel = { app:0, mouse:0, screen:0 };
+  let last={}, userAt=0, turn=0;
+  function render(changed){
+    bar.innerHTML = KINDS.map(([k,list])=>`<button class="ctxp${k===changed?" hl":""}" data-kind="${k}">${IC[k]}${L(list[sel[k]].n)}<i>▼</i></button>`).join("");
+    const a=CTX_APPS[sel.app], m=CTX_MICE[sel.mouse], sc=CTX_SCREENS[sel.screen];
+    const rows = [
+      ["rolagem", L("Rolagem suave|Smooth Scrolling"), L("por app|per app"), L(a.scroll)],
+      ["botoes",  L("Botão 4|Button 4"),               L("por app|per app"), L(a.b4)],
+      ["cursor",  L("Velocidade|Speed"),               L("mouse + tela|mouse + display"), (m.v*sc.k).toFixed(1)+"×"],
+      ["cursor",  L("Aceleração|Acceleration"),        L("por mouse|per mouse"), L(m.a?"Ligada|On":"Desligada|Off")],
+    ];
+    res.innerHTML = rows.map(([ic,label,tag,val],i)=>`<div class="rrow${changed && last[i]!==val?" flash":""}">${ICONS[ic]}<span>${label}</span><span class="tag">${tag}</span><b>${val}</b></div>`).join("");
+    rows.forEach(([, , ,val],i)=>last[i]=val);
+  }
+  bar.addEventListener("click",e=>{ const b=e.target.closest(".ctxp"); if(!b) return; const k=b.dataset.kind, list=KINDS.find(x=>x[0]===k)[1];
+    sel[k]=(sel[k]+1)%list.length; userAt=performance.now(); render(k); });
+  render(); langListeners.push(()=>render());
+  setInterval(()=>{ if(!isOn("cada") || performance.now()-userAt<8000) return;          // troca sozinho, um seletor de cada vez
+    const [k,list]=KINDS[turn++%3]; sel[k]=(sel[k]+1)%list.length; render(k); }, 2300);
 })();
 
 /* ---------- 7. constelação de ajustes ---------- */
@@ -1032,6 +1147,7 @@ const GESTURES = {
   box.addEventListener("click",e=>{
     const item=e.target.closest(".lz-item"), tog=e.target.closest(".lz-tog"), opt=e.target.closest(".lz-opt,.lz-row"), sl=e.target.closest(".lz-sl"), win=box.firstChild;
     if(item){ cur=item.dataset.s; lzShow(win,cur,on[cur]!==false); return; }
+    if(tog && tog.dataset.k==="acc"){ tog.classList.toggle("on"); return; }
     if(tog){ on[cur]=!(on[cur]!==false); tog.classList.toggle("on",on[cur]); win.classList.toggle("lz-off",!on[cur]); return; }
     if(opt){ opt.parentElement.querySelectorAll(".on").forEach(x=>x.classList.remove("on")); opt.classList.add("on"); return; }
     if(sl){ const r=sl.getBoundingClientRect(), x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)); sl.querySelector(".f").style.width=sl.querySelector(".kn").style.left=(x*100)+"%"; }
