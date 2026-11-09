@@ -695,7 +695,7 @@ const isOn = id => active.has(id);
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ err.textContent="Confira o e-mail."; form.EMAIL.focus(); return; }
     btn.disabled=true; btn.textContent="Enviando…";
     const data=new FormData(form); data.append("locale","pt"); data.append("html_type","simple");
-    try{ await fetch(BREVO_FORM_URL,{method:"POST",body:data,mode:"no-cors"}); }
+    try{ await fetch(BREVO_FORM_URL+"?isAjax=1",{method:"POST",body:data,mode:"no-cors"}); }
     catch(_){ /* sem internet ou bloqueado: não impede o download */ }
     sheet.classList.add("ok"); btn.disabled=false; btn.textContent="Baixar grátis"; form.reset();
     startDownload();
