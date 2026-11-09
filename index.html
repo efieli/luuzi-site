@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUUZI — seu mouse, fluido no Mac</title>
+<meta name="description" content="Rolagem suave, gestos, botões, auto scroll e cursor para qualquer mouse no Mac.">
+<meta name="theme-color" content="#141210">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 241 234'%3E%3Cpath fill='%23E8562A' d='M61.341 86.673 L0 108.776 L40.728 141.309 L6.209 233.694 L96.358 179.058 L151.988 195.449 L156.706 139.323 L240.4 67.799 L122.932 81.706 L57.616 0Z'/%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   EDITE AQUI — cores oficiais do LUUZI (Theme.swift / Skins.swift)
+   ============================================================ */
+:root{
+  --accent:#E8562A;        /* laranja LUUZI */
+  --pink:#FF4FA3;
+  --blue:#3B5BFF;
+  --bg:#141210;            /* grafite quente, um pouco mais fundo que o app (#1B1917) */
+  --bg-2:#1B1917;
+  --card:#262321;
+  --card-2:#302C29;
+  --stroke:#3A3532;
+  --text:#F2EFEA;
+  --dim:#A8A29C;
+  --ease:cubic-bezier(.65,0,.35,1);   /* ease in-out usado em todas as transições */
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- fundo: brilhos que mudam de lugar a cada seção ---------- */
+.aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(90px);opacity:.34;
+  transition:transform 1.6s var(--ease),background 1.6s var(--ease),opacity 1.6s var(--ease);will-change:transform}
+.blob.b1{background:radial-gradient(circle,var(--accent),transparent 65%);left:-10vmax;top:-20vmax}
+.blob.b2{background:radial-gradient(circle,var(--pink),transparent 65%);right:-25vmax;top:10vmax;opacity:.2}
+.blob.b3{background:radial-gradient(circle,var(--blue),transparent 65%);left:10vmax;bottom:-40vmax;opacity:.22}
+.grain{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ---------- topo e navegação ---------- */
+.top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:22px clamp(16px,4vw,48px)}
+.top .mark{height:22px;width:auto}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;font-weight:600;font-size:15px;
+  background:var(--accent);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 10px 40px -8px color-mix(in srgb,var(--accent) 80%,transparent);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),background 1s var(--ease)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.2) inset,0 16px 60px -6px var(--accent)}
+.btn.ghost{background:rgba(255,255,255,.06);box-shadow:0 0 0 1px var(--stroke) inset;backdrop-filter:blur(12px)}
+.btn.sm{padding:9px 16px;font-size:14px}
+.dots{position:fixed;right:clamp(10px,2vw,28px);top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:14px}
+.dots a{width:8px;height:8px;border-radius:50%;background:var(--stroke);position:relative;transition:all .6s var(--ease)}
+.dots a.on{background:var(--accent);box-shadow:0 0 14px var(--accent);height:26px;border-radius:6px}
+.dots a span{position:absolute;right:20px;top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;font-size:12px;
+  color:var(--dim);opacity:0;transition:all .4s var(--ease);pointer-events:none}
+.dots a:hover span{opacity:1;transform:translateY(-50%)}
+
+/* ---------- seções ---------- */
+section{position:relative;z-index:1;min-height:100vh;min-height:100svh;scroll-snap-align:start;display:flex;align-items:center;
+  justify-content:center;padding:100px clamp(16px,6vw,80px) 70px}
+.wrap{width:100%;max-width:1160px;display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(32px,6vw,90px);align-items:center}
+.wrap.flip{grid-template-columns:1.15fr 1fr}
+.wrap.flip .copy{order:2}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);transition:color 1s var(--ease)}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+h1,h2{font-weight:800;letter-spacing:-.035em;line-height:1.02}
+h1{font-size:clamp(44px,8vw,104px)}
+h2{font-size:clamp(34px,5vw,62px);margin:18px 0 18px}
+.lead{font-size:clamp(17px,1.6vw,20px);line-height:1.55;color:var(--dim);max-width:30em}
+.grad{background:linear-gradient(100deg,var(--text) 10%,var(--accent) 55%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.chip{font-size:13px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--stroke);color:var(--dim)}
+.chip b{color:var(--text);font-weight:600}
+
+/* animação de entrada: cada .r entra quando a seção fica ativa, em cascata */
+.r{opacity:0;transform:translateY(34px) scale(.985);filter:blur(8px);
+  transition:opacity 1s var(--ease),transform 1.1s var(--ease),filter 1s var(--ease);transition-delay:calc(var(--i,0) * 110ms)}
+section.in .r{opacity:1;transform:none;filter:none}
+
+/* ---------- vitrine (palco dos exemplos) ---------- */
+.stage{position:relative;aspect-ratio:4/3;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.08);box-shadow:0 40px 120px -40px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4),
+  0 0 80px -30px color-mix(in srgb,var(--accent) 50%,transparent) ;overflow:hidden;backdrop-filter:blur(20px)}
+.stage::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(120% 60% at 30% 0%,rgba(255,255,255,.08),transparent 60%)}
+.win-bar{position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;gap:7px;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.win-bar i{width:11px;height:11px;border-radius:50%;background:#3a3532}
+.win-bar i:nth-child(1){background:#ff5f57}.win-bar i:nth-child(2){background:#febc2e}.win-bar i:nth-child(3){background:#28c840}
+.win-bar em{margin-left:auto;font:500 11px var(--mono);color:var(--dim);font-style:normal}
+.hud{position:absolute;left:50%;bottom:22px;transform:translate(-50%,14px);opacity:0;padding:10px 16px;border-radius:14px;
+  background:rgba(20,18,16,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);font-size:14px;font-weight:600;
+  display:flex;gap:10px;align-items:center;white-space:nowrap;transition:all .6s var(--ease);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.hud.show{opacity:1;transform:translate(-50%,0)}
+.hud .k{font:600 11px var(--mono);padding:3px 7px;border-radius:6px;background:var(--accent);color:#fff}
+.cursor{position:absolute;width:22px;height:22px;left:0;top:0;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+
+/* ---------- 1. hero ---------- */
+#inicio .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
+.star-hero{width:clamp(150px,22vw,250px);aspect-ratio:240/234;position:relative;margin-bottom:10px}
+.star-hero svg{width:100%;height:100%;overflow:visible}
+.star-hero .halo{position:absolute;inset:-60%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 55%,transparent),transparent 60%);
+  filter:blur(30px);animation:breathe 6s var(--ease) infinite alternate}
+.star-hero svg{animation:float 7s var(--ease) infinite alternate}
+@keyframes breathe{from{opacity:.55;transform:scale(.9)}to{opacity:1;transform:scale(1.08)}}
+@keyframes float{from{transform:translateY(-6px) rotate(-3deg)}to{transform:translateY(8px) rotate(4deg)}}
+#inicio .lead{margin:22px auto 0;text-align:center}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:10px;letter-spacing:.1em;text-transform:uppercase}
+.hint i{width:22px;height:34px;border:1.5px solid var(--stroke);border-radius:12px;position:relative}
+.hint i::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:7px;border-radius:2px;background:var(--accent);transform:translateX(-50%);animation:wheel 2s var(--ease) infinite}
+@keyframes wheel{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,12px)}}
+
+/* ---------- 2. rolagem ---------- */
+.scroll-demo{display:grid;grid-template-columns:1fr 1fr;gap:14px;position:absolute;inset:52px 18px 18px}
+.pane{position:relative;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.pane h4{position:absolute;top:10px;left:12px;z-index:2;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+  padding:4px 8px;border-radius:6px;background:rgba(20,18,16,.8)}
+.pane.on h4{color:#fff;background:var(--accent)}
+.feed{position:absolute;left:12px;right:12px;top:0;will-change:transform}
+.feed div{height:46px;margin-top:10px;border-radius:10px;background:rgba(255,255,255,.05);display:flex;align-items:center;gap:10px;padding:0 10px}
+.feed div::before{content:"";width:26px;height:26px;border-radius:8px;background:var(--c,#3a3532);flex:none}
+.feed div::after{content:"";height:7px;border-radius:4px;background:rgba(255,255,255,.12);width:var(--w,60%)}
+.pane::after{content:"";position:absolute;inset:auto 0 0 0;height:50px;background:linear-gradient(transparent,rgba(20,18,16,.9))}
+.curve{position:absolute;right:28px;bottom:26px;width:150px;padding:12px;border-radius:14px;background:rgba(20,18,16,.75);
+  border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(10px);z-index:3}
+.curve small{display:block;font:600 10px var(--mono);color:var(--dim);margin-bottom:6px;letter-spacing:.08em}
+
+/* ---------- 3. gestos ---------- */
+.spaces{position:absolute;inset:0;display:flex;transition:transform 1.1s var(--ease)}
+.space{flex:0 0 100%;position:relative;padding:58px 26px 26px}
+.space .label{position:absolute;top:50px;right:24px;font:600 11px var(--mono);color:var(--dim)}
+.space .w{position:absolute;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 50px -20px rgba(0,0,0,.7)}
+.space .w::before{content:"";position:absolute;top:9px;left:10px;width:30px;height:7px;border-radius:4px;
+  background:radial-gradient(circle at 3.5px 50%,#ff5f57 3px,transparent 3.5px),radial-gradient(circle at 15px 50%,#febc2e 3px,transparent 3.5px),radial-gradient(circle at 26.5px 50%,#28c840 3px,transparent 3.5px)}
+.trail{position:absolute;inset:0;z-index:4;pointer-events:none;width:100%;height:100%}
+.trail path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.gesture-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:26px;max-width:420px}
+.gesture-map div{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--dim);padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--stroke);transition:all .5s var(--ease)}
+.gesture-map div b{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--card-2);color:var(--text);font-size:14px;flex:none;transition:all .5s var(--ease)}
+.gesture-map div.on{color:var(--text);border-color:color-mix(in srgb,var(--accent) 60%,transparent);box-shadow:0 0 30px -10px var(--accent)}
+.gesture-map div.on b{background:var(--accent);color:#fff}
+.hold{position:absolute;z-index:6;font:600 10px var(--mono);padding:4px 8px;border-radius:6px;background:var(--accent);color:#fff;opacity:0;transform:scale(.8);transition:all .4s var(--ease);white-space:nowrap}
+.hold.show{opacity:1;transform:scale(1)}
+
+/* ---------- 4. botões ---------- */
+.mouse-wrap{position:absolute;inset:38px 0 0 0;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:20px 28px}
+.mouse{width:min(80%,220px);justify-self:center;overflow:visible}
+.mouse .btnz{fill:rgba(255,255,255,.06);stroke:rgba(255,255,255,.16);stroke-width:1.5;transition:fill .5s var(--ease),filter .5s var(--ease),stroke .5s var(--ease)}
+.mouse .btnz.on{fill:var(--accent);stroke:var(--accent);filter:drop-shadow(0 0 12px var(--accent))}
+.maps{display:flex;flex-direction:column;gap:8px}
+.map{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.2);
+  font-size:13px;transition:all .55s var(--ease);opacity:.55}
+.map .n{font:600 10px var(--mono);color:var(--dim);width:64px;flex:none}
+.map .arrow{color:var(--dim)}
+.map .act{font-weight:600}
+.map.on{opacity:1;border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 14%,transparent);transform:translateX(-6px)}
+.apptabs{position:absolute;top:50px;right:18px;display:flex;gap:6px;z-index:3}
+.apptabs span{font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);color:var(--dim);transition:all .5s var(--ease)}
+.apptabs span.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+
+/* ---------- 5. auto scroll ---------- */
+.doc{position:absolute;inset:38px 0 0 0;overflow:hidden}
+.doc .page{position:absolute;left:12%;right:12%;top:0;will-change:transform}
+.doc .page p{height:9px;border-radius:5px;background:rgba(255,255,255,.09);margin:16px 0}
+.doc .page p.h{height:20px;width:55%;background:rgba(255,255,255,.18);margin-top:34px}
+.doc .page p.img{height:110px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 40%,transparent),color-mix(in srgb,var(--blue) 35%,transparent))}
+.anchor{position:absolute;left:50%;top:44%;width:44px;height:44px;margin:-22px 0 0 -22px;z-index:4;opacity:0;transform:scale(.6);transition:all .5s var(--ease)}
+.anchor.show{opacity:1;transform:none}
+.anchor .ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(20,18,16,.55);backdrop-filter:blur(6px);box-shadow:0 0 26px -4px var(--accent)}
+.anchor svg{position:absolute;inset:11px;fill:var(--accent)}
+.speed{position:absolute;right:20px;top:54px;z-index:4;font:600 11px var(--mono);color:var(--dim);padding:6px 10px;border-radius:8px;background:rgba(20,18,16,.75);border:1px solid rgba(255,255,255,.08)}
+.speed b{color:var(--text)}
+
+/* ---------- 6. cursor ---------- */
+.pad{position:absolute;inset:38px 0 0 0;cursor:none;touch-action:pan-y}
+.pad .gridbg{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1.5px);background-size:26px 26px;
+  mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(circle at 50% 50%,#000 30%,transparent 75%)}
+.pad .ghost,.pad .real{position:absolute;left:0;top:0;width:22px;height:22px;pointer-events:none;will-change:transform}
+.pad .ghost{opacity:.35}
+.pad .glow{position:absolute;left:0;top:0;width:180px;height:180px;margin:-90px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 45%,transparent),transparent 65%);filter:blur(10px)}
+.pad .legend{position:absolute;left:18px;bottom:16px;display:flex;gap:14px;font-size:12px;color:var(--dim)}
+.pad .legend span{display:flex;align-items:center;gap:6px}
+.pad .legend i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.pad .legend i.g{background:rgba(255,255,255,.35)}
+.slider{margin-top:28px;max-width:380px}
+.slider label{display:flex;justify-content:space-between;font-size:13px;color:var(--dim);margin-bottom:10px}
+.slider label b{font:600 13px var(--mono);color:var(--text)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent) var(--p,40%),var(--stroke) var(--p,40%));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent),0 4px 12px rgba(0,0,0,.5);cursor:grab}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 35%,transparent)}
+
+/* ---------- 7. skins ---------- */
+.skins{position:absolute;inset:38px 0 0 0;display:grid;place-items:center}
+.icon-tile{width:42%;aspect-ratio:1;border-radius:22.5%;position:relative;transition:background 1s var(--ease),box-shadow 1s var(--ease);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 78%,#fff),var(--accent) 55%,color-mix(in srgb,var(--accent) 84%,#000));
+  box-shadow:0 30px 80px -20px var(--accent),0 0 0 1px rgba(255,255,255,.25) inset}
+.icon-tile::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(70% 60% at 38% 8%,rgba(255,255,255,.3),transparent 70%)}
+.icon-tile svg{position:absolute;left:20%;top:21%;width:60%;fill:#fff;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))}
+.swatches{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.swatches button{width:40px;height:40px;border-radius:50%;background:var(--c);position:relative;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.swatches button:hover{transform:scale(1.1)}
+.swatches button.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--c),0 0 24px var(--c)}
+.swatches button span{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--dim);white-space:nowrap;opacity:0;transition:opacity .3s}
+.swatches button.on span,.swatches button:hover span{opacity:1}
+
+/* ---------- 8. final ---------- */
+#baixar .wrap{grid-template-columns:1fr;text-align:center;justify-items:center}
+#baixar .lead{margin:0 auto}
+#baixar{padding-bottom:90px}
+#baixar h2{margin:14px 0 14px}
+#baixar .perks{margin-top:22px}
+#baixar .cta-row{margin-top:24px}
+.perks{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:30px}
+.perks span{display:flex;flex-direction:column;gap:4px;min-width:130px;padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--stroke);font-size:13px;color:var(--dim)}
+.perks b{font-size:17px;color:var(--text)}
+.btn.big{padding:18px 30px;font-size:17px;animation:pulse 3.2s var(--ease) infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 10px 40px -8px var(--accent)}50%{box-shadow:0 0 0 1px rgba(255,255,255,.2) inset,0 14px 70px -4px var(--accent)}}
+.req{margin-top:22px;font:500 12px var(--mono);color:var(--dim);letter-spacing:.06em}
+footer{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:12px;color:var(--dim)}
+
+/* ---------- celular ---------- */
+@media (max-width:860px){
+  html{scroll-snap-type:y proximity}
+  .wrap,.wrap.flip{grid-template-columns:1fr;gap:34px}
+  .wrap.flip .copy{order:0}
+  .dots{display:none}
+  .stage{aspect-ratio:1/1}
+  .mouse-wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:56px 16px 16px;gap:8px}
+  .mouse{width:110px}
+  .map .n{width:56px}
+  .curve{display:none}
+  .gesture-map{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="aura" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grain"></div></div>
+
+<!-- Desenhos reaproveitados (logo vetorial de _logo LUUZI/LOGO LUUZI.pdf) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="star" d="M61.341 86.673 L0 108.776 L40.728 141.309 L6.209 233.694 L96.358 179.058 L151.988 195.449 L156.706 139.323 L240.4 67.799 L122.932 81.706 L57.616 0Z"/>
+    <path id="letters" d="M0 20.494 L0 91.488 L58.534 91.488 L61.241 75.06 L23.135 75.06 L23.135 20.494ZM86.047 20.493 L86.047 61.593 C86.047 72.877 91.471 76.623 99.074 76.623 C107.057 76.623 111.245 72.488 111.245 61.593 L111.245 20.493 L134.344 20.493 L134.344 61.697 C134.344 82.326 122.87 93.108 98.499 93.108 C75.006 93.108 62.947 82.905 62.947 61.681 L62.947 20.493ZM160.738 20.493 L160.738 61.593 C160.738 72.877 166.162 76.623 173.765 76.623 C181.748 76.623 185.936 72.488 185.936 61.593 L185.936 20.493 L209.035 20.493 L209.035 61.697 C209.035 82.326 197.561 93.108 173.19 93.108 C149.697 93.108 137.638 82.905 137.638 61.681 L137.638 20.493ZM210.35 77.365 L249.785 36.659 L212.263 36.659 L212.263 20.493 L278.479 20.493 L278.479 36.116 L239.811 75.322 L282.224 75.322 L279.745 91.488 L210.35 91.488ZM285.443 20.494 h23.1 v70.994 h-23.1Z"/>
+    <g id="pointer"><path d="M3 2 L3 18 L7.2 14.2 L10 20.5 L12.8 19.3 L10.1 13.2 L15.8 13.2Z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></g>
+  </defs>
+</svg>
+
+<header class="top">
+  <a href="#inicio" aria-label="LUUZI">
+    <svg class="mark" viewBox="0 0 426 108"><use href="#letters" fill="var(--text)"/><use href="#star" fill="var(--accent)" transform="translate(314.336 0) scale(.4613 .4613)"/></svg>
+  </a>
+  <a class="btn sm" href="#baixar">Baixar grátis</a>
+</header>
+
+<nav class="dots" aria-label="Seções"></nav>
+
+<main>
+
+<!-- 1 · INÍCIO -->
+<section id="inicio" data-title="Início" data-aura="0">
+  <div class="wrap">
+    <div class="star-hero r" style="--i:0"><div class="halo"></div>
+      <svg viewBox="0 0 241 234"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8a5c"/><stop offset=".55" stop-color="var(--accent)"/><stop offset="1" stop-color="#c63f17"/></linearGradient></defs><use href="#star" fill="url(#sg)"/></svg>
+    </div>
+    <h1 class="r" style="--i:1">Seu mouse,<br><span class="grad">fluido como o Mac.</span></h1>
+    <p class="lead r" style="--i:2">Qualquer mouse, com a fluidez e os atalhos de um trackpad. Sem esforço.</p>
+    <div class="cta-row r" style="--i:3">
+      <a class="btn" href="#baixar">Baixar alpha grátis</a>
+      <a class="btn ghost" href="#rolagem">Ver o que ele faz</a>
+    </div>
+  </div>
+  <div class="hint" aria-hidden="true"><i></i>role</div>
+</section>
+
+<!-- 2 · ROLAGEM -->
+<section id="rolagem" data-title="Rolagem" data-aura="1">
+  <div class="wrap">
+    <div class="copy">
+      <span class="eyebrow r" style="--i:0">Rolagem suave</span>
+      <h2 class="r" style="--i:1">Role sem trancos.</h2>
+      <p class="lead r" style="--i:2">Nada de página aos trancos. Você rola e ela desliza, macia como no trackpad.</p>
+      <div class="chips r" style="--i:3"><span class="chip">Funciona em <b>todo app</b></span><span class="chip">Inércia de <b>trackpad</b></span><span class="chip">Velocidade <b>do seu jeito</b></span></div>
+    </div>
+    <div class="stage r" style="--i:2">
+      <div class="win-bar"><i></i><i></i><i></i><em>roda do mouse ↓</em></div>
+      <div class="scroll-demo">
+        <div class="pane"><h4>Sem LUUZI</h4><div class="feed" id="feedA"></div></div>
+        <div class="pane on"><h4>Com LUUZI</h4><div class="feed" id="feedB"></div></div>
+      </div>
+      <div class="curve"><small>QUINT OUT</small>
+        <svg viewBox="0 0 100 70" width="100%"><path d="M4 66 C 30 6, 60 4, 96 4" fill="none" stroke="var(--stroke)" stroke-width="2"/>
+          <path id="curveLive" d="M4 66 C 30 6, 60 4, 96 4" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+          <circle id="curveDot" r="4" fill="#fff" cx="4" cy="66" style="filter:drop-shadow(0 0 6px var(--accent))"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · GESTOS -->
+<section id="gestos" data-title="Gestos" data-aura="2">
+  <div class="wrap flip">
+    <div class="copy">
+      <span class="eyebrow r" style="--i:0">Gestos</span>
+      <h2 class="r" style="--i:1">Um risco e você troca de mesa.</h2>
+      <p class="lead r" style="--i:2">Segure um botão e mova o mouse. Spaces, Mission Control e a mesa ficam a um gesto.</p>
+      <div class="gesture-map r" style="--i:3" id="gmap">
+        <div data-g="left"><b>←</b>Espaço à direita</div>
+        <div data-g="right"><b>→</b>Espaço à esquerda</div>
+        <div data-g="up"><b>↑</b>Mission Control</div>
+        <div data-g="down"><b>↓</b>Mostrar mesa</div>
+      </div>
+    </div>
+    <div class="stage r" style="--i:2" id="gStage">
+      <div class="spaces" id="spaces">
+        <div class="space"><span class="label">Mesa 1</span>
+          <div class="w" style="left:8%;top:24%;width:52%;height:52%"></div><div class="w" style="left:44%;top:40%;width:46%;height:46%"></div></div>
+        <div class="space"><span class="label">Mesa 2</span>
+          <div class="w" style="left:12%;top:22%;width:76%;height:64%;background:linear-gradient(135deg,color-mix(in srgb,var(--blue) 30%,transparent),rgba(255,255,255,.05))"></div></div>
+        <div class="space"><span class="label">Mesa 3</span>
+          <div class="w" style="left:10%;top:26%;width:38%;height:58%"></div><div class="w" style="left:52%;top:26%;width:38%;height:58%;background:linear-gradient(135deg,color-mix(in srgb,var(--pink) 28%,transparent),rgba(255,255,255,.05))"></div></div>
+      </div>
+      <svg class="trail" id="trail" viewBox="0 0 400 300" preserveAspectRatio="none"><defs><linearGradient id="tg" x1="1" x2="0"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset="1" stop-color="var(--accent)"/></linearGradient></defs>
+        <path id="trailPath" d="" stroke="url(#tg)" stroke-width="5" style="filter:drop-shadow(0 0 8px var(--accent))"/></svg>
+      <span class="hold" id="hold">segurando botão do meio</span>
+      <svg class="cursor" id="gCursor" viewBox="0 0 22 22"><use href="#pointer"/></svg>
+      <div class="hud" id="gHud"><span class="k">←</span><span id="gHudText">Espaço à direita</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · BOTÕES -->
+<section id="botoes" data-title="Botões" data-aura="3">
+  <div class="wrap">
+    <div class="copy">
+      <span class="eyebrow r" style="--i:0">Botões</span>
+      <h2 class="r" style="--i:1">Cada botão faz o que você quiser.</h2>
+      <p class="lead r" style="--i:2">Voltar, fechar aba, abrir um app, um atalho. E muda sozinho conforme o app aberto.</p>
+      <div class="chips r" style="--i:3"><span class="chip"><b>Por app</b></span><span class="chip"><b>Por mouse</b></span><span class="chip"><b>Por tela</b></span></div>
+    </div>
+    <div class="stage r" style="--i:2">
+      <div class="win-bar"><i></i><i></i><i></i><em>Botões</em></div>
+      <div class="apptabs" id="apptabs"><span class="on">Safari</span><span>Figma</span><span>Finder</span></div>
+      <div class="mouse-wrap">
+        <svg class="mouse" viewBox="0 0 120 190" aria-hidden="true">
+          <defs><linearGradient id="mb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3532"/><stop offset="1" stop-color="#1f1c1a"/></linearGradient></defs>
+          <path d="M60 4 C 98 4 114 34 114 80 L114 128 C114 166 92 186 60 186 C28 186 6 166 6 128 L6 80 C6 34 22 4 60 4Z" fill="url(#mb)" stroke="rgba(255,255,255,.14)" stroke-width="1.5"/>
+          <path class="btnz" data-b="0" d="M57 8 C 28 10 12 32 10 74 L57 74Z"/>
+          <path class="btnz" data-b="1" d="M63 8 C 92 10 108 32 110 74 L63 74Z"/>
+          <rect class="btnz" data-b="2" x="53" y="22" width="14" height="30" rx="7"/>
+          <rect class="btnz" data-b="3" x="1" y="96" width="9" height="22" rx="4"/>
+          <rect class="btnz" data-b="4" x="1" y="122" width="9" height="22" rx="4"/>
+        </svg>
+        <div class="maps" id="maps"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · AUTO SCROLL -->
+<section id="autoscroll" data-title="Auto scroll" data-aura="4">
+  <div class="wrap flip">
+    <div class="copy">
+      <span class="eyebrow r" style="--i:0">Arrastar &amp; auto scroll</span>
+      <h2 class="r" style="--i:1">Páginas longas? Deixe correr.</h2>
+      <p class="lead r" style="--i:2">Clique e afaste o mouse: quanto mais longe, mais rápido. Sem girar a roda até cansar.</p>
+      <div class="chips r" style="--i:3"><span class="chip"><b>Auto scroll</b></span><span class="chip"><b>Arrastar</b> o conteúdo</span></div>
+    </div>
+    <div class="stage r" style="--i:2">
+      <div class="win-bar"><i></i><i></i><i></i><em>artigo.html</em></div>
+      <div class="doc"><div class="page" id="page"></div></div>
+      <div class="anchor" id="anchor"><div class="ring"></div><svg viewBox="0 0 241 234"><use href="#star"/></svg></div>
+      <svg class="cursor" id="aCursor" viewBox="0 0 22 22"><use href="#pointer"/></svg>
+      <div class="speed">velocidade <b id="aSpeed">0</b> px/s</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · CURSOR -->
+<section id="cursor" data-title="Cursor" data-aura="5">
+  <div class="wrap">
+    <div class="copy">
+      <span class="eyebrow r" style="--i:0">Cursor</span>
+      <h2 class="r" style="--i:1">O ponteiro na velocidade certa.</h2>
+      <p class="lead r" style="--i:2">Mais rápido no monitor grande, preciso no Figma. Cada mouse do seu jeito. Teste ao lado.</p>
+      <div class="slider r" style="--i:3">
+        <label for="spd">Velocidade <b id="spdOut">1.6×</b></label>
+        <input id="spd" type="range" min="0.5" max="3" step="0.1" value="1.6">
+      </div>
+    </div>
+    <div class="stage r" style="--i:2">
+      <div class="win-bar"><i></i><i></i><i></i><em>passe o mouse aqui</em></div>
+      <div class="pad" id="pad">
+        <div class="gridbg"></div>
+        <div class="glow" id="pGlow"></div>
+        <svg class="ghost" id="pGhost" viewBox="0 0 22 22"><use href="#pointer"/></svg>
+        <svg class="real" id="pReal" viewBox="0 0 22 22"><use href="#pointer"/></svg>
+        <div class="legend"><span><i class="g"></i>macOS</span><span><i></i>LUUZI</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · SKINS -->
+<section id="skins" data-title="Skins" data-aura="6">
+  <div class="wrap flip">
+    <div class="copy">
+      <span class="eyebrow r" style="--i:0">Skins</span>
+      <h2 class="r" style="--i:1">Com a sua cor.</h2>
+      <p class="lead r" style="--i:2">Escolha uma skin e o app inteiro muda, até o ícone no Dock. Toque numa cor.</p>
+      <div class="swatches r" style="--i:3" id="swatches"></div>
+    </div>
+    <div class="stage r" style="--i:2">
+      <div class="win-bar"><i></i><i></i><i></i><em>Skins</em></div>
+      <div class="skins"><div class="icon-tile"><svg viewBox="0 0 241 234"><use href="#star"/></svg></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · BAIXAR -->
+<section id="baixar" data-title="Baixar" data-aura="7">
+  <div class="wrap">
+    <span class="eyebrow r" style="--i:0">Versão alpha</span>
+    <h2 class="r" style="--i:1">Use antes de todo mundo.<br><span class="grad">De graça.</span></h2>
+    <p class="lead r" style="--i:2">O alpha é gratuito para quem experimentar antes do lançamento oficial. E quem ajudar a construir o LUUZI agora terá uma <b style="color:var(--text)">condição especial no lançamento</b>.</p>
+    <div class="perks r" style="--i:3"><span><b>Grátis</b>no alpha</span><span><b>Especial</b>no lançamento</span><span><b>Automáticas</b>as atualizações</span></div>
+    <div class="cta-row r" style="--i:4"><a class="btn big" data-download href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>Baixar LUUZI alpha</a></div>
+    <p class="req r" style="--i:5">Grátis · macOS 14 ou mais novo · Apple Silicon e Intel</p>
+  </div>
+  <footer>© <span id="yr"></span> LUUZI</footer>
+</section>
+
+</main>
+
+<script>
+/* ============================================================
+   EDITE AQUI — link de download e textos dos exemplos
+   ============================================================ */
+const DOWNLOAD_URL = "https://efieli.github.io/luuzi-releases/alpha/LUUZI-0.1.0.219.zip";
+
+const BUTTONS = [ // botão do mouse → ação, por app
+  { app:"Safari", maps:[[3,"4 · VOLTAR","Voltar ⌘["],[4,"5 · AVANÇAR","Avançar ⌘]"],[2,"3 · MEIO","Fechar aba ⌘W"]] },
+  { app:"Figma",  maps:[[3,"4 · VOLTAR","Desfazer ⌘Z"],[4,"5 · AVANÇAR","Refazer ⌘⇧Z"],[2,"3 · MEIO","Mission Control"]] },
+  { app:"Finder", maps:[[3,"4 · VOLTAR","Espaço à esquerda"],[4,"5 · AVANÇAR","Espaço à direita"],[2,"3 · MEIO","Abrir Música"]] },
+];
+
+const SKINS = [ // Skins.swift
+  ["LUUZI","#E8562A"],["Oceano","#2F7DE1"],["Floresta","#2E9A64"],["Uva","#8A4FE8"],["Rosa","#E0457F"],["Grafite","#4F5964"]
+];
+
+/* Posição dos brilhos do fundo em cada seção (x, y em vmax) */
+const AURA = [
+  [[0,0],[0,0],[0,0]],
+  [[-8,30],[-30,-10],[20,-10]],
+  [[60,10],[-60,40],[-10,-30]],
+  [[10,40],[-20,-20],[50,-20]],
+  [[70,-10],[-50,30],[0,-10]],
+  [[20,20],[-10,40],[40,-40]],
+  [[40,30],[-40,0],[-20,-20]],
+  [[30,15],[-30,10],[20,-25]],
+];
+
+/* ============================================================ */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const easeInOut = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+const quintOut = t => 1-Math.pow(1-t,5);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+$$("[data-download]").forEach(a => { if (a.getAttribute("href")==="#") a.href = DOWNLOAD_URL; });
+$("#yr").textContent = new Date().getFullYear();
+
+/* ---------- seções: entrada, navegação e fundo ---------- */
+const sections = $$("main section"), nav = $(".dots"), blobs = $$(".blob");
+sections.forEach(s => { const a = document.createElement("a"); a.href = "#"+s.id; a.innerHTML = `<span>${s.dataset.title}</span>`; nav.appendChild(a); });
+const navLinks = $$(".dots a");
+const active = new Set();
+const io = new IntersectionObserver(es => es.forEach(e => {
+  const s = e.target, i = sections.indexOf(s);
+  if (e.isIntersecting) {
+    s.classList.add("in"); active.add(s.id);
+    navLinks.forEach((a,k) => a.classList.toggle("on", k===i));
+    AURA[i].forEach(([x,y],k) => blobs[k].style.transform = `translate(${x}vmax,${y}vmax)`);
+  } else { s.classList.remove("in"); active.delete(s.id); }
+}), { threshold:.5 });
+sections.forEach(s => io.observe(s));
+const isOn = id => active.has(id);
+
+/* ---------- 2. rolagem: degraus x deslize ---------- */
+(function(){
+  const colors = ["#E8562A","#3B5BFF","#FF4FA3","#2E9A64","#8A4FE8","#febc2e"];
+  const fill = el => { for (let i=0;i<40;i++){ const d=document.createElement("div"); d.style.setProperty("--c",colors[i%6]+"aa"); d.style.setProperty("--w",(40+((i*37)%45))+"%"); el.appendChild(d);} };
+  const A=$("#feedA"), B=$("#feedB"); fill(A); fill(B);
+  const live=$("#curveLive"), dot=$("#curveDot");
+  const bez = t => { const p=[[4,66],[30,6],[60,4],[96,4]], u=1-t; return [0,1].map(k=>u*u*u*p[0][k]+3*u*u*t*p[1][k]+3*u*t*t*p[2][k]+t*t*t*p[3][k]); };
+  let y=0, from=0, to=0, t0=0, notch=0;
+  const STEP=112, DUR=520;
+  function tick(now){
+    requestAnimationFrame(tick);
+    if (!isOn("rolagem")) return;
+    if (now - t0 > 900) { // novo "clique" da roda
+      notch++; from=y; to = (notch % 7 === 0) ? 0 : y + STEP; t0 = now;
+      A.style.transform = `translateY(${-to}px)`; // sem LUUZI: pula direto
+    }
+    const p = Math.min(1,(now-t0)/DUR), e = to===0 ? easeInOut(p) : quintOut(p);
+    y = from + (to-from)*e;
+    B.style.transform = `translateY(${-y}px)`;
+    live.style.strokeDashoffset = 1-e; const [cx,cy]=bez(p); dot.setAttribute("cx",cx); dot.setAttribute("cy",cy);
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ---------- 3. gestos: risco + troca de Space ---------- */
+(function(){
+  const stage=$("#gStage"), cur=$("#gCursor"), path=$("#trailPath"), hud=$("#gHud"), hold=$("#hold"), spaces=$("#spaces"), gmap=$$("#gmap div"), hudText=$("#gHudText"), hudKey=hud.querySelector(".k");
+  let space=1; spaces.style.transform=`translateX(-${space*100}%)`;
+  const place=(x,y)=>{ const r=stage.getBoundingClientRect(); cur.style.transform=`translate(${x/400*r.width}px,${y/300*r.height}px)`; };
+  const anim=(dur,fn)=>new Promise(res=>{ const t0=performance.now(); const f=n=>{ const p=Math.min(1,(n-t0)/dur); fn(easeInOut(p),p); p<1?requestAnimationFrame(f):res(); }; requestAnimationFrame(f); });
+  const waitOn=async()=>{ while(!isOn("gestos")) await sleep(300); };
+  const lit=g=>gmap.forEach(d=>d.classList.toggle("on",d.dataset.g===g));
+  async function gesture(dir){
+    // dir: -1 = risco para a esquerda (vai para o Space da direita), +1 = para a direita
+    const x0 = dir<0 ? 290 : 110, x1 = dir<0 ? 110 : 290, yy=160;
+    lit(dir<0?"left":"right");
+    await anim(700,e=>place(200+(x0-200)*e, 220+(yy-220)*e));
+    const r=stage.getBoundingClientRect();
+    hold.style.left=(x0/400*r.width+18)+"px"; hold.style.top=(yy/300*r.height-30)+"px"; hold.classList.add("show");
+    await sleep(380);
+    const pts=[];
+    await anim(650,e=>{ const x=x0+(x1-x0)*e, y=yy+Math.sin(e*Math.PI)*-10; pts.push([x,y]); place(x,y); path.setAttribute("d","M"+pts.map(p=>p.join(" ")).join(" L")); hold.style.left=(x/400*r.width+18)+"px"; });
+    hold.classList.remove("show");
+    space += dir<0 ? 1 : -1;
+    spaces.style.transform=`translateX(-${space*100}%)`;
+    hudKey.textContent = dir<0?"←":"→"; hudText.textContent = dir<0?"Espaço à direita":"Espaço à esquerda"; hud.classList.add("show");
+    await anim(500,e=>path.style.opacity=1-e); path.setAttribute("d",""); path.style.opacity=1;
+    await sleep(900); hud.classList.remove("show"); await sleep(500);
+  }
+  async function loop(){
+    place(200,220);
+    const seq=[-1,+1,+1,-1];
+    for(let i=0;;i++){ await waitOn(); await gesture(seq[i%seq.length]); await sleep(500); }
+  }
+  loop();
+})();
+
+/* ---------- 4. botões ---------- */
+(function(){
+  const maps=$("#maps"), tabs=$$("#apptabs span"), btns=$$(".mouse .btnz");
+  let a=0, k=0;
+  function render(){ maps.innerHTML = BUTTONS[a].maps.map(m=>`<div class="map" data-b="${m[0]}"><span class="n">${m[1]}</span><span class="arrow">→</span><span class="act">${m[2]}</span></div>`).join(""); tabs.forEach((t,i)=>t.classList.toggle("on",i===a)); }
+  render();
+  setInterval(()=>{
+    if(!isOn("botoes")) return;
+    k++; if (k>=BUTTONS[a].maps.length){ k=0; a=(a+1)%BUTTONS.length; render(); }
+    const b = BUTTONS[a].maps[k][0];
+    btns.forEach(el=>el.classList.toggle("on", +el.dataset.b===b));
+    $$("#maps .map").forEach((m,i)=>m.classList.toggle("on", i===k));
+  },1500);
+})();
+
+/* ---------- 5. auto scroll ---------- */
+(function(){
+  const page=$("#page"), cur=$("#aCursor"), anchor=$("#anchor"), out=$("#aSpeed"), st=anchor.parentElement;
+  let html=""; for(let i=0;i<14;i++){ html+=`<p class="h"></p><p></p><p style="width:92%"></p><p style="width:80%"></p>${i%2?'<p class="img"></p>':''}<p></p><p style="width:65%"></p>`; }
+  page.innerHTML=html;
+  let y=0, last=performance.now(), phase=0, t0=last;
+  function tick(now){
+    requestAnimationFrame(tick);
+    const dt=(now-last)/1000; last=now;
+    if(!isOn("autoscroll")) return;
+    const r=st.getBoundingClientRect(), ax=r.width/2, ay=r.height*.44;
+    const T=(now-t0)/1000, cycle=7, p=(T%cycle)/cycle;
+    let off=0;                                   // distância do cursor até o ícone
+    if(p<.08){ anchor.classList.remove("show"); }
+    else if(p<.88){ anchor.classList.add("show"); const q=(p-.08)/.8; off = Math.sin(q*Math.PI)*easeInOut(Math.min(1,q*2))*110; }
+    else { anchor.classList.remove("show"); }
+    const speed = off*off*.06;                   // mais longe = mais rápido
+    y += speed*dt; const max=page.scrollHeight-r.height; if(y>max) y=0;
+    page.style.transform=`translateY(${-y}px)`;
+    cur.style.transform=`translate(${ax-4}px,${ay+off-4}px)`;
+    out.textContent=Math.round(speed);
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ---------- 6. cursor: segue o mouse com a velocidade escolhida ---------- */
+(function(){
+  const pad=$("#pad"), real=$("#pReal"), ghost=$("#pGhost"), glow=$("#pGlow"), spd=$("#spd"), out=$("#spdOut");
+  let f=+spd.value, tx=0, ty=0, gx=0, gy=0, rx=0, ry=0, hover=false, w=0, h=0;
+  const setF=()=>{ f=+spd.value; out.textContent=f.toFixed(1)+"×"; spd.style.setProperty("--p",((f-.5)/2.5*100)+"%"); }; setF();
+  spd.addEventListener("input",setF);
+  pad.addEventListener("pointermove",e=>{ const r=pad.getBoundingClientRect(); hover=true; tx=e.clientX-r.left; ty=e.clientY-r.top; });
+  pad.addEventListener("pointerleave",()=>hover=false);
+  function tick(now){
+    requestAnimationFrame(tick);
+    if(!isOn("cursor")) return;
+    w=pad.clientWidth; h=pad.clientHeight; const cx=w/2, cy=h/2;
+    if(!hover){ const t=now/1000; tx=cx+Math.sin(t*.9)*w*.18; ty=cy+Math.sin(t*1.3)*h*.15; }
+    gx=tx; gy=ty;                                         // macOS: onde a mão está
+    const zx=cx+(tx-cx)*f, zy=cy+(ty-cy)*f;               // LUUZI: o mesmo movimento, multiplicado
+    const ex=Math.max(10,Math.min(w-20,zx)), ey=Math.max(10,Math.min(h-20,zy));
+    rx+=(ex-rx)*.22; ry+=(ey-ry)*.22;                     // pequena suavização
+    ghost.style.transform=`translate(${gx}px,${gy}px)`;
+    real.style.transform=`translate(${rx}px,${ry}px)`;
+    glow.style.transform=`translate(${rx}px,${ry}px)`;
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ---------- 7. skins: muda a cor da página inteira ---------- */
+(function(){
+  const box=$("#swatches"), root=document.documentElement;
+  SKINS.forEach(([n,c],i)=>{ const b=document.createElement("button"); b.style.setProperty("--c",c); b.innerHTML=`<span>${n}</span>`; b.setAttribute("aria-label","Skin "+n); if(!i) b.classList.add("on");
+    b.onclick=()=>{ root.style.setProperty("--accent",c); $$("#swatches button").forEach(x=>x.classList.toggle("on",x===b)); }; box.appendChild(b); });
+})();
+</script>
+</body>
+</html>
