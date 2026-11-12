@@ -25,7 +25,8 @@ const CFG = {
   rolagem:    { from:"cursor",   ctl:"opt1" },
   botoes:     { from:"rolagem",  ctl:"row0" },
   gestos:     { from:"botoes",   ctl:"row2" },
-  autoscroll: { from:"gestos",   ctl:"opt0" },
+  arrastar:   { from:"gestos",   ctl:"row0" },
+  autoscroll: { from:"arrastar", ctl:"opt0" },
   cursor:     { from:"rolagem",  ctl:"knob", drag:[.30,.80], then:"acc" },
 };
 
@@ -49,10 +50,12 @@ const TEXT = {
     "ges.left":"Space to the right", "ges.right":"Space to the left", "ges.up":"Mission Control", "ges.down":"Show Desktop",
     "ges.d1":"Desktop 1", "ges.d2":"Desktop 2", "ges.d3":"Desktop 3",
     "auto.h":"Autoscroll", "auto.p":"Click and move the mouse away: the page scrolls by itself, faster the farther you go.<br>No wheel spinning.",
-    "auto.chips":'<span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Drag</b> the content</span>', "auto.bar":"article.html",
+    "arr.h":"Drag", "arr.p":"Hold a button and drag the page, like on a trackpad.<br>When you let go, it keeps gliding with macOS momentum.",
+    "arr.chips":'<span class="chip"><b>Any button</b></span><span class="chip">With <b>momentum</b></span><span class="chip">Direction <b>your way</b></span>',
+    "auto.chips":'<span class="chip"><b>Autoscroll</b></span><span class="chip">No <b>wheel</b> spinning</span>', "auto.bar":"article.html",
     "cur.h":"Pointer", "cur.p":"Every mouse with its own speed.<br>And if you like, turn acceleration off: the pointer always moves exactly as much as your hand.", "cur.speed":"Speed", "cur.acc":"Acceleration", "cur.hand":"your hand", "cur.bar":"move your mouse here",
     "cada.h":"Every app, every mouse, every display.", "cada.p":"Every LUUZI section can have its own settings per app, per mouse and per display.<br>Switch apps, mice or monitors and LUUZI switches along, on its own.",
-    "cada.chips":'<span class="chip"><b>Smooth Scrolling</b></span><span class="chip"><b>Buttons</b></span><span class="chip"><b>Gestures</b></span><span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Pointer</b></span>',
+    "cada.chips":'<span class="chip"><b>Smooth Scrolling</b></span><span class="chip"><b>Buttons</b></span><span class="chip"><b>Gestures</b></span><span class="chip"><b>Drag</b></span><span class="chip"><b>Autoscroll</b></span><span class="chip"><b>Pointer</b></span>',
     "inf.h":'One star.<br><span class="grad">Endless possibilities.</span>',
     "inf.p":"Stars form endless constellations.<br>In LUUZI, every setting is a star: combine buttons, gestures and speeds per app, per mouse and per display, and shape your mouse your way.",
     "app.h":"All in one app.", "app.p":"Simple to set up. Click around.",
@@ -130,7 +133,7 @@ const LINKS = [[0,2],[2,4],[4,6],[6,8],[8,9],[0,1],[1,3],[3,5],[5,7],[7,9],[3,4]
 /* Posição dos brilhos do fundo em cada seção (x, y em vmax) */
 const AURA = [
   [[0,0],[0,0],[0,0]],[[-8,30],[-30,-10],[20,-10]],[[10,40],[-20,-20],[50,-20]],[[60,10],[-60,40],[-10,-30]],
-  [[70,-10],[-50,30],[0,-10]],[[20,20],[-10,40],[40,-40]],[[30,10],[-20,10],[10,-20]],[[50,20],[-30,30],[0,-30]],[[40,30],[-40,0],[-20,-20]],[[30,15],[-30,10],[20,-25]],
+  [[70,-10],[-50,30],[0,-10]],[[40,0],[-40,20],[10,-20]],[[20,20],[-10,40],[40,-40]],[[30,10],[-20,10],[10,-20]],[[50,20],[-30,30],[0,-30]],[[40,30],[-40,0],[-20,-20]],[[30,15],[-30,10],[20,-25]],
 ];
 
 /* ============================================================ */
@@ -429,6 +432,36 @@ const GESTURES = {
     catch(e){ if(e!==STOP) throw e; clean(); } };
 })();
 
+/* ---------- 4b. arrastar: segura, arrasta e solta com inércia ---------- */
+(function(){
+  const st=$("#rStage"), page=$("#rPage"), arrow=$("#rCursor"), hand=$("#rHand");
+  let html=""; for(let i=0;i<14;i++){ html+=`<p class="h"></p><p></p><p style="width:92%"></p><p style="width:80%"></p>${i%2?'<p class="img"></p>':''}<p></p><p style="width:65%"></p>`; } page.innerHTML=html;
+  let y=0, v=0, last=performance.now(), t0=last, prevCy=null;
+  const DRAGS=[[.9,2.3],[4.2,5.6]], LOOP=7.5;
+  (function tick(now){
+    requestAnimationFrame(tick);
+    const dt=Math.min(.05,(now-last)/1000); last=now;
+    if(!isOn("arrastar") || st.classList.contains("cfg-on")){ t0=now; prevCy=null; return; }
+    const r=st.getBoundingClientRect(), sx=r.width*.55, sy=r.height*.72, len=r.height*.4;
+    const T=((now-t0)/1000)%LOOP;
+    let cy=sy, grab=false, shown=T>.15&&T<LOOP-.3;
+    for(const [a,b] of DRAGS){
+      if(T>=a-.4&&T<a){ cy=sy; grab=T>a-.15; }                                    // chega e segura
+      else if(T>=a&&T<=b){ cy=sy-len*easeInOut((T-a)/(b-a)); grab=true; }        // arrasta para cima
+      else if(T>b&&T<b+1){ cy=sy-len+len*easeInOut((T-b)/1)*.0; }
+    }
+    if(T>2.3&&T<3.6) cy=sy-len+len*easeInOut((T-2.3)/1.3);                         // volta para o ponto inicial
+    if(T>5.6&&T<6.9) cy=sy-len+len*easeInOut((T-5.6)/1.3);
+    if(grab){ if(prevCy!==null){ const d=prevCy-cy; y+=d; v+= (d/Math.max(dt,.001)-v)*.35; } }
+    else { y+=v*dt; v*=Math.exp(-dt/.5); }                                          // solta: segue com a inércia
+    prevCy=grab?cy:null;
+    const max=page.scrollHeight-r.height; if(y>max||y<0){ y=0; v=0; }
+    page.style.transform=`translateY(${-y}px)`;
+    arrow.style.transform=`translate(${sx-3}px,${cy-2}px)`; hand.style.transform=`translate(${sx-12}px,${cy-12}px) scale(${grab?.92:1})`;
+    arrow.style.opacity=shown&&!grab?1:0; hand.style.opacity=shown&&grab?1:0;
+  })(last);
+})();
+
 /* ---------- 5. auto scroll: ícone Clássico com o elástico do app ---------- */
 (function(){
   const st=$("#aStage"), page=$("#page"), cur=$("#aCursor"), svg=$("#anchor"), disc=$("#aDisc"), dot=$("#aDot"), ag=$("#aArrows");
@@ -632,7 +665,7 @@ const DISPOSABLE = /@(mailinator|guerrillamail|10minutemail|temp-?mail|tempmail|
 })();
 
 /* ---------- ícone do app antes do título de cada seção ---------- */
-const H_ICONS = { rolagem:"rolagem", botoes:"botoes", gestos:"gestos", autoscroll:"autoscroll", cursor:"cursor" };
+const H_ICONS = { rolagem:"rolagem", botoes:"botoes", gestos:"gestos", arrastar:"arrastar", autoscroll:"autoscroll", cursor:"cursor" };
 const addTitleIcons = () => Object.entries(H_ICONS).forEach(([sec,key]) => {
   const h=$(`#${sec} h2`); if(h && !h.querySelector(".h-ico")) h.insertAdjacentHTML("afterbegin", `<span class="h-ico" aria-hidden="true">${ICONS[key]}</span>`); });
 langListeners.unshift(addTitleIcons);
