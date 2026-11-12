@@ -16,7 +16,7 @@ Página única de apresentação do LUUZI (app de mouse para Mac). Publicada pel
 - **Textos**: o português (Brasil) está direto no HTML, nos elementos com `data-t="..."`.
   O inglês fica no objeto `TEXT.en`, com as mesmas chaves. Textos usados pelo código ficam em `S`.
   Quem tem o navegador em português vê PT; os demais veem EN. `?lang=pt` ou `?lang=en` forçam.
-- **Download**: `DOWNLOADS` (um link para Apple Silicon e outro para Intel; hoje o build é universal, então os dois são iguais).
+- **Download**: `DOWNLOADS` (um link para Apple Silicon e outro para Intel; hoje o build é universal, então os dois são iguais). Apontam para `github.com/efieli/luuzi-releases/releases/latest/download/LUUZI.zip`: sempre a última Release (criada pelo `publish.sh`) e o GitHub conta os downloads de cada versão. Contagem: `gh release view <tag> -R efieli/luuzi-releases --json assets`.
 - **Cadastro antes do download**: `BREVO_FORM_URL` (formulário "LUUZI Alpha - download" no Brevo, lista "LUUZI Alpha").
 - **Janela do LUUZI desenhada** (animações "Configure no LUUZI"): `SCREENS`, `CFG`, `lzBody()` no `app.js`.
 - **Seção "Tudo num app só"** (o app inteiro para explorar, com balões, skins, ajustes e testes que funcionam): `explorar.js`.
