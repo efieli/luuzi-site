@@ -233,8 +233,8 @@ const ICONS = {
   rolagem:'<svg viewBox="0 0 16 16"><rect x="4" y="1.5" width="8" height="13" rx="4"/><path d="M8 4.2v2.6"/></svg>',
   cursor:'<svg viewBox="0 0 16 16"><path d="M3 2.5l10 4.6-4.4 1.5L7 13z"/></svg>',
   botoes:'<svg viewBox="0 0 16 16"><rect x="3.5" y="1.5" width="9" height="13" rx="4.5"/><path d="M8 1.5v5M3.5 6.5h9"/></svg>',
-  gestos:'<svg viewBox="0 0 16 16"><path d="M1.8 7.5c2.2-3 4.2 2.6 6.6-.2 1-1.2 2.2-1.6 3.6-1.3M10.5 9.5l3.5 3.5M14 9.5v3.5h-3.5"/></svg>',
-  arrastar:'<svg viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0M14 10V4a2 2 0 0 0-4 0v2M10 10.5V6a2 2 0 0 0-4 0v8M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
+  gestos:'<svg viewBox="0 0 24 24"><circle cx="12" cy="19" r="2"/><path d="M12 17C9.5 15 14.5 13 11.5 10.5S14.5 7 12.5 4"/></svg>',
+  arrastar:'<svg viewBox="0 0 24 24"><path d="M17 11V7a1.5 1.5 0 0 0-3 0M14 10V5a1.5 1.5 0 0 0-3 0v2M11 10.5V7a1.5 1.5 0 0 0-3 0v7M17 9a1.5 1.5 0 1 1 3 0v5a7 7 0 0 1-7 7h-1.5c-2.4 0-3.9-.75-5.2-2l-2.4-2.4a1.5 1.5 0 0 1 2.1-2.1L8 15"/></svg>',
   autoscroll:'<svg viewBox="0 0 16 16"><path d="M8 1.6l2.2 2.6H5.8zM8 14.4l2.2-2.6H5.8z"/><circle cx="8" cy="8" r="1.5"/></svg>',
 };
 const ORDER = ["rolagem","cursor","botoes","gestos","arrastar","autoscroll"];
