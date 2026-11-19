@@ -162,9 +162,11 @@ const ORIGINAL = {}; $$("[data-t]").forEach(el => { ORIGINAL[el.dataset.t] = ORI
 const langListeners = [];
 function noOrphans(root){
   // em cada trecho entre <br>, troca o último espaço por um espaço que não quebra
-  const lines=[[]], walk=document.createTreeWalker(root, NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+  const done=[], lines=[[]], walk=document.createTreeWalker(root, NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
   while(walk.nextNode()){ const n=walk.currentNode; if(n.nodeName==="BR") lines.push([]); else if(n.nodeType===3) lines[lines.length-1].push(n); }
-  lines.forEach(nodes=>{ for(let i=nodes.length-1;i>=0;i--){ const t=nodes[i].nodeValue, k=t.trimEnd().lastIndexOf(" "); if(k>0){ nodes[i].nodeValue=t.slice(0,k)+" "+t.slice(k+1); break; } } });
+  lines.forEach(nodes=>{ for(let i=nodes.length-1;i>=0;i--){ const t=nodes[i].nodeValue, k=t.trimEnd().lastIndexOf(" "); if(k>0){ nodes[i].nodeValue=t.slice(0,k)+" "+t.slice(k+1); done.push([nodes[i],k]); break; } } });
+  // se as duas últimas palavras juntas não cabem na largura (celular), solta de novo: melhor quebrar do que vazar da tela
+  if(root.clientWidth && root.scrollWidth>root.clientWidth+1) done.forEach(([n,k])=>{ const t=n.nodeValue; n.nodeValue=t.slice(0,k)+" "+t.slice(k+1); });
 }
 function applyLang(){
   document.documentElement.lang = LANG==="pt" ? "pt-BR" : "en";
@@ -590,7 +592,8 @@ const GESTURES = {
       ctx.save(); ctx.shadowColor=acc; ctx.shadowBlur=near?24:12; ctx.fillStyle=near?acc:text; ctx.globalAlpha=near?1:.85;
       ctx.beginPath(); ctx.arc(x,y,rad*.55,0,7); ctx.fill(); ctx.restore();
       ctx.font=`${near?600:500} ${near?14:12.5}px ${font}`; ctx.textAlign="center"; ctx.fillStyle=near?text:dim;
-      ctx.globalAlpha=Math.min(1,Math.max(0,(T-.3-i*.08)/.5)); ctx.fillText(L(name),x,y-14); ctx.globalAlpha=1; });
+      ctx.globalAlpha=Math.min(1,Math.max(0,(T-.3-i*.08)/.5)); const lw=ctx.measureText(L(name)).width/2, lx=Math.min(r.width-lw-4,Math.max(lw+4,x));      // o nome nunca sai do desenho (celular)
+      ctx.fillText(L(name),lx,y-14); ctx.globalAlpha=1; });
     // raios: depois das ligações entre os pontos, cada ponto se liga à estrela, e uma luz corre do ponto até ela
     const cx=r.width*.5, cy=r.height*.44, R0=Math.min(r.width,r.height)*.075, T2=T-LINKS.length*.12-.5;
     let hits=0;
