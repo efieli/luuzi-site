@@ -97,7 +97,13 @@ const S = {
   step1:["Configure no LUUZI","Set it up in LUUZI"], step2:["Na prática","In action"],
   req:["Compatível com macOS 14 Sonoma ou mais novo · Apple Silicon e Intel","Compatible with macOS 14 Sonoma or later · Apple Silicon and Intel"],
   reqArch:["Compatível com macOS 14 Sonoma ou mais novo · versão para Mac com ","Compatible with macOS 14 Sonoma or later · version for Macs with "],
-  reqNoMac:["O LUUZI é para Mac (macOS 14 ou mais novo). Cadastre-se e baixe no seu Mac.","LUUZI is for Mac (macOS 14 or later). Sign up and download it on your Mac."],
+  reqNoMac:["O LUUZI é para Mac (macOS 14 ou mais novo). Envie o link para o seu e-mail e baixe no seu Mac.","LUUZI is for Mac (macOS 14 or later). Send the link to your email and download it on your Mac."],
+  // quem não está num Mac (celular, Windows): em vez de baixar, envia o link para abrir no Mac
+  nmCta:["Enviar para o meu Mac","Send it to my Mac"], nmTop:["Enviar para o Mac","Send to my Mac"],
+  nmH:["Envie o LUUZI para o seu Mac","Send LUUZI to your Mac"],
+  nmP:["O LUUZI é para Mac.<br>Deixe seu nome e e-mail e baixe quando estiver no computador.","LUUZI is for Mac.<br>Leave your name and email and download it when you're at your computer."],
+  nmBtn:["Enviar o link","Send the link"], nmDone:["Pronto! Confira seu e-mail no Mac","Done! Check your email on your Mac"],
+  nmThanks:["Ou abra este endereço no seu Mac:","Or open this address on your Mac:"], nmCopied:["Link copiado","Link copied"],
   privacy:["Só usamos seu e-mail para falar do LUUZI. Sem spam.","We only use your email to talk about LUUZI. No spam."],
   forMac:["Versão para Mac com ","Version for Macs with "],
   errName:["Diga seu nome.","Tell us your name."], errEmail:["Confira o e-mail.","Check your email."], errLimit:["Você já se cadastrou. Tente de novo em alguns minutos.","You already signed up. Try again in a few minutes."], sending:["Enviando…","Sending…"],
@@ -637,7 +643,21 @@ const DISPOSABLE = /@(mailinator|guerrillamail|10minutemail|temp-?mail|tempmail|
   const close=()=>{ modal.classList.remove("open"); if(lastFocus) lastFocus.focus(); setTimeout(()=>sheet.classList.remove("ok"),700); };
   $$("[data-signup]").forEach(a=>a.addEventListener("click",open));
   $$("[data-close]").forEach(el=>el.addEventListener("click",close));
-  $("#dlAgain").addEventListener("click",e=>{ e.preventDefault(); startDownload(); });
+  // fora do Mac: botões e textos viram "Enviar para o meu Mac" e o link final é o endereço do site (toque copia)
+  const siteUrl=location.origin+location.pathname, again=$("#dlAgain");
+  const MAIL='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>';
+  if(!isMac){
+    $$(".cta-row [data-signup] svg").forEach(s=>s.outerHTML=MAIL);
+    langListeners.push(()=>{
+      $$('[data-t="hero.cta"],[data-t="dl.btn"]').forEach(el=>el.textContent=L(S.nmCta));
+      $$('[data-t="top.cta"]').forEach(el=>el.textContent=L(S.nmTop));
+      [["m.h",S.nmH],["m.p",S.nmP],["m.btn",S.nmBtn],["m.done",S.nmDone],["m.thanks",S.nmThanks]].forEach(([k,t])=>$$(`[data-t="${k}"]`).forEach(el=>el.innerHTML=L(t))); // textos fixos do S (nunca dados do visitante)
+      again.removeAttribute("data-t"); again.href=siteUrl; again.textContent=siteUrl.replace(/^https?:\/\//,"").replace(/\/$/,"");
+    });
+  }
+  again.addEventListener("click",async e=>{ e.preventDefault();
+    if(isMac) return startDownload();
+    try{ await navigator.clipboard.writeText(siteUrl); again.textContent=L(S.nmCopied); }catch(_){} });
   addEventListener("keydown",e=>{ if(e.key==="Escape"&&modal.classList.contains("open")) close(); });
   form.addEventListener("submit",async e=>{
     e.preventDefault(); err.textContent="";
@@ -660,7 +680,7 @@ const DISPOSABLE = /@(mailinator|guerrillamail|10minutemail|temp-?mail|tempmail|
       try{ await fetch(BREVO_FORM_URL+"?isAjax=1",{method:"POST",body:data,mode:"no-cors",credentials:"omit",referrerPolicy:"strict-origin"}); }catch(_){ /* não impede o download */ }
     } else await new Promise(r=>setTimeout(r,900));
     sheet.classList.add("ok"); form.reset(); setTimeout(()=>{ btn.disabled=false; btn.textContent=label; },5000);
-    startDownload();
+    if(isMac) startDownload();                                                     // fora do Mac não baixa: o link vai por e-mail
   });
 })();
 
